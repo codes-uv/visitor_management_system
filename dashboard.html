@@ -51,14 +51,6 @@
           </svg>
           <span>Visitors</span>
         </a>
-        <a href="dashboard.html#add" onclick="showSection('add'); return false;"
-          class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
-          <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-              d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" />
-          </svg>
-          <span>Add Visitor</span>
-        </a>
         <a href="dashboard.html#blacklist" onclick="showSection('blacklist'); return false;"
           class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
           <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -80,8 +72,6 @@
       <!-- User Profile - Fixed at Bottom -->
       <div class="p-4 border-t border-slate-200 dark:border-slate-800 shrink-0 bg-white dark:bg-slate-900">
         <div class="flex items-center gap-3">
-          <img src="https://i.pravatar.cc/40?u=admin"
-            class="w-9 h-9 rounded-full ring-2 ring-slate-200 dark:ring-slate-700">
           <div class="flex-1 min-w-0">
             <p class="text-sm font-medium truncate" data-username>admin</p>
             <p class="text-xs text-slate-500 dark:text-slate-400 truncate">Security Admin</p>
@@ -273,89 +263,6 @@
                     </a>
                   </div>
                 </div>
-              </div>
-            </div>
-          </section>
-
-          <section id="section-add" class="hidden">
-            <div class="max-w-3xl">
-              <button onclick="showSection('dashboard')"
-                class="mb-6 flex items-center gap-2 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
-                </svg>
-                Back
-              </button>
-              <div
-                class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
-                <div class="p-6 border-b border-slate-100 dark:border-slate-800">
-                  <h3 class="text-xl font-semibold">Add New Visitor</h3>
-                  <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">Fill visitor details for check-in</p>
-                </div>
-                <form id="addVisitorForm" class="p-6 space-y-5">
-                  <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-                    <div>
-                      <label class="block text-sm font-medium mb-1.5">Visitor Name *</label>
-                      <input name="name" required placeholder="Enter full name"
-                        class="w-full px-4 py-2.5 border border-slate-300 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-950 focus:ring-2 focus:ring-indigo-500">
-                      <p class="error-msg text-xs text-red-600 mt-1 hidden">Name is required</p>
-                    </div>
-                    <div>
-                      <label class="block text-sm font-medium mb-1.5">Mobile Number *</label>
-                      <input name="mobile" required placeholder="10-digit number" maxlength="10"
-                        class="w-full px-4 py-2.5 border border-slate-300 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-950 focus:ring-2 focus:ring-indigo-500">
-                      <p class="error-msg text-xs text-red-600 mt-1 hidden">Mobile is required</p>
-                    </div>
-                  </div>
-                  <div>
-                    <label class="block text-sm font-medium mb-1.5">Address *</label>
-                    <input name="address" required placeholder="Full address"
-                      class="w-full px-4 py-2.5 border border-slate-300 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-950 focus:ring-2 focus:ring-indigo-500">
-                    <p class="error-msg text-xs text-red-600 mt-1 hidden">Address is required</p>
-                  </div>
-                  <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
-                    <div>
-                      <label class="block text-sm font-medium mb-1.5">Purpose *</label>
-                      <select name="purpose" required
-                        class="w-full px-4 py-2.5 border border-slate-300 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-950 focus:ring-2 focus:ring-indigo-500">
-                        <option value="">Select purpose</option>
-                        <option>Interview</option>
-                        <option>Client Meeting</option>
-                        <option>Delivery</option>
-                        <option>Maintenance</option>
-                        <option>Vendor Discussion</option>
-                        <option>Personal</option>
-                        <option>Guest</option>
-                        <option>Audit</option>
-                      </select>
-                      <p class="error-msg text-xs text-red-600 mt-1 hidden">Purpose is required</p>
-                    </div>
-                    <div>
-                      <label class="block text-sm font-medium mb-1.5">Person to Meet *</label>
-                      <input name="person" required placeholder="Host name"
-                        class="w-full px-4 py-2.5 border border-slate-300 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-950 focus:ring-2 focus:ring-indigo-500">
-                      <p class="error-msg text-xs text-red-600 mt-1 hidden">Person is required</p>
-                    </div>
-                    <div>
-                      <label class="block text-sm font-medium mb-1.5">Duration *</label>
-                      <select name="duration" required
-                        class="w-full px-4 py-2.5 border border-slate-300 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-950 focus:ring-2 focus:ring-indigo-500">
-                        <option value="30">30 minutes</option>
-                        <option value="60" selected>1 hour</option>
-                        <option value="120">2 hours</option>
-                        <option value="240">4 hours</option>
-                        <option value="480">8 hours</option>
-                      </select>
-                    </div>
-                  </div>
-                  <div class="flex items-center gap-3 pt-4">
-                    <button type="submit"
-                      class="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-xl shadow-lg shadow-indigo-600/20">Check
-                      In</button>
-                    <button type="reset"
-                      class="px-6 py-2.5 border border-slate-300 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-xl">Clear</button>
-                  </div>
-                </form>
               </div>
             </div>
           </section>
