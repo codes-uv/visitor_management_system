@@ -5,14 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Reports - VisitorHub</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <script>tailwind.config = { darkMode: 'class', theme: { extend: { fontFamily: { sans: ['Inter','system-ui'] } } } }</script>
   <script>const t=localStorage.getItem('dvms_theme');if(t==='dark'||(!t&&matchMedia('(prefers-color-scheme: dark)').matches))document.documentElement.classList.add('dark')</script>
 </head>
 <body class="bg-slate-50 dark:bg-slate-950 font-sans text-slate-900 dark:text-slate-100 h-full overflow-hidden">
   <div class="flex h-full">
-    <!-- SIDEBAR - FULL 5 ITEMS -->
     <aside id="sidebar" class="fixed inset-y-0 left-0 z-40 w-72 bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 transform -translate-x-full lg:translate-x-0 transition-transform duration-300 flex flex-col">
       <div class="h-[73px] flex items-center px-6 border-b border-slate-200 dark:border-slate-800 shrink-0">
         <div class="flex items-center gap-3">
@@ -99,8 +98,17 @@
             <div class="h-72"><canvas id="visitsChart"></canvas></div>
           </div>
           <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-6">
-            <h3 class="font-semibold text-lg mb-6">Visit Purpose</h3>
-            <div class="h-64 flex items-center justify-center"><canvas id="purposeChart"></canvas></div>
+            <h3 class="font-semibold text-lg mb-1">Visit Purpose</h3>
+            <p class="text-sm text-slate-500 dark:text-slate-400 mb-4">Distribution this month</p>
+            <div class="h-64 relative">
+              <canvas id="purposeChart"></canvas>
+            </div>
+            <div class="mt-4 grid grid-cols-2 gap-2 text-xs">
+              <div class="flex items-center gap-2"><span class="w-3 h-3 rounded-full bg-indigo-600"></span><span>Interview (35%)</span></div>
+              <div class="flex items-center gap-2"><span class="w-3 h-3 rounded-full bg-cyan-500"></span><span>Meeting (25%)</span></div>
+              <div class="flex items-center gap-2"><span class="w-3 h-3 rounded-full bg-emerald-500"></span><span>Delivery (20%)</span></div>
+              <div class="flex items-center gap-2"><span class="w-3 h-3 rounded-full bg-amber-500"></span><span>Maintenance (12%)</span></div>
+            </div>
           </div>
         </div>
         </div>
@@ -108,7 +116,43 @@
     </div>
   </div>
 
-  <script src="assets/data.js"></script>
-  <script src="assets/main.js"></script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a0affa3f9c6770aa',t:'MTc4MTM0MTk4Nw=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+  <script src="assets/data.js?v=3"></script>
+  <script src="assets/main.js?v=4"></script>
+  <script>
+    // Initialize charts after everything loads
+    window.addEventListener('load', function() {
+      // Visit Purpose Doughnut Chart - Fixed
+      const ctx2 = document.getElementById('purposeChart');
+      if (ctx2 && typeof Chart !== 'undefined') {
+        new Chart(ctx2, {
+          type: 'doughnut',
+          data: {
+            labels: ['Interview', 'Client Meeting', 'Delivery', 'Maintenance', 'Other'],
+            datasets: [{
+              data: [35, 25, 20, 12, 8],
+              backgroundColor: ['#4f46e5', '#06b6d4', '#10b981', '#f59e0b', '#8b5cf6'],
+              borderWidth: 0,
+              hoverOffset: 8
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            cutout: '65%',
+            plugins: {
+              legend: { display: false },
+              tooltip: {
+                backgroundColor: 'rgba(15, 23, 42, 0.9)',
+                padding: 12,
+                cornerRadius: 8,
+                titleFont: { size: 13 },
+                bodyFont: { size: 12 }
+              }
+            }
+          }
+        });
+      }
+    });
+  </script>
+</body>
 </html>

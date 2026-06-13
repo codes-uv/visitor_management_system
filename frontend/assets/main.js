@@ -1,4 +1,4 @@
-// Main JS for DVMS v2 - with Pass ID, Edit, Overstay
+// Main JS for DVMS v3 - with Pass ID, Edit, Overstay, Colorful Popups
 (function() {
   const saved = localStorage.getItem('dvms_theme');
   const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
@@ -40,6 +40,54 @@ function getOverstay(checkIn, expectedDuration) {
   return 0;
 }
 
+// COLORFUL CONFIRM POPUP
+function showConfirm(title, message, details, onConfirm, type='warning') {
+  const icons = {
+    warning: '<svg class="w-6 h-6 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>',
+    danger: '<svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>',
+    info: '<svg class="w-6 h-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>'
+  };
+  const colors = {
+    warning: 'bg-amber-100 dark:bg-amber-950',
+    danger: 'bg-red-100 dark:bg-red-950',
+    info: 'bg-indigo-100 dark:bg-indigo-950'
+  };
+  
+  const modal = document.createElement('div');
+  modal.className = 'fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm';
+  modal.innerHTML = `
+    <div class="bg-white dark:bg-slate-900 rounded-3xl shadow-2xl max-w-md w-full border border-slate-200 dark:border-slate-800 transform scale-95 opacity-0 transition-all duration-200" id="confirmBox">
+      <div class="p-6">
+        <div class="w-12 h-12 rounded-2xl ${colors[type]} flex items-center justify-center mb-4">
+          ${icons[type]}
+        </div>
+        <h3 class="text-xl font-bold mb-2 text-slate-900 dark:text-white">${title}</h3>
+        <p class="text-slate-600 dark:text-slate-400 mb-4">${message}</p>
+        ${details ? `<div class="bg-slate-50 dark:bg-slate-800/50 rounded-xl p-3 text-sm space-y-1.5 mb-5 border border-slate-200 dark:border-slate-700">${details}</div>` : ''}
+        <div class="flex gap-3">
+          <button id="confirmCancel" class="flex-1 py-2.5 border border-slate-300 dark:border-slate-700 rounded-xl font-medium hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">Cancel</button>
+          <button id="confirmOk" class="flex-1 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-medium shadow-lg shadow-indigo-600/20 transition-colors">Confirm</button>
+        </div>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(modal);
+  setTimeout(() => {
+    document.getElementById('confirmBox').classList.remove('scale-95', 'opacity-0');
+  }, 10);
+  
+  modal.querySelector('#confirmCancel').onclick = () => {
+    document.getElementById('confirmBox').classList.add('scale-95', 'opacity-0');
+    setTimeout(() => modal.remove(), 200);
+  };
+  modal.querySelector('#confirmOk').onclick = () => {
+    document.getElementById('confirmBox').classList.add('scale-95', 'opacity-0');
+    setTimeout(() => { modal.remove(); onConfirm(); }, 200);
+  };
+  modal.onclick = (e) => { if (e.target === modal) modal.querySelector('#confirmCancel').click(); };
+}
+window.showConfirm = showConfirm;
+
 document.addEventListener('DOMContentLoaded', () => {
   updateThemeIcons();
   const isLoginPage = window.location.pathname.includes('login.html');
@@ -49,7 +97,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const data = DVMS.getData();
 
-  // Sidebar
   const sidebar = document.getElementById('sidebar');
   const sidebarToggle = document.getElementById('sidebarToggle');
   const sidebarOverlay = document.getElementById('sidebarOverlay');
@@ -70,7 +117,6 @@ document.addEventListener('DOMContentLoaded', () => {
   });
   document.querySelectorAll('[data-username]').forEach(el => el.textContent = user || 'Admin');
 
-  // DASHBOARD
   if (document.getElementById('statsGrid')) {
     const today = DVMS.today();
     const todayVisitors = data.visitors.filter(v => v.checkIn.startsWith(today));
@@ -83,12 +129,11 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('statCompleted').textContent = completedToday.length;
     document.getElementById('statBlacklist').textContent = data.blacklist.length;
 
-    // Add overstay counter to dashboard
     const statsGrid = document.getElementById('statsGrid');
     if (overstays.length > 0 && !document.getElementById('overstayAlert')) {
       const alert = document.createElement('div');
       alert.id = 'overstayAlert';
-      alert.className = 'sm:col-span-2 xl:col-span-4 bg-amber-50 mb-[1.5rem] dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 rounded-2xl p-4 flex items-center justify-between';
+      alert.className = 'sm:col-span-2 xl:col-span-4 bg-amber-50 mb-[1.5rem] dark:bg-amber-950/30 border border-amber-200 dark:border-slate-800 rounded-2xl p-4 flex items-center justify-between';
       alert.innerHTML = `
         <div class="flex items-center gap-3">
           <div class="w-10 h-10 bg-amber-100 dark:bg-amber-900 rounded-xl flex items-center justify-center">
@@ -132,7 +177,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // ADD VISITOR
   const addForm = document.getElementById('addVisitorForm');
   if (addForm) {
     addForm.addEventListener('submit', (e) => {
@@ -187,7 +231,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // VISITORS LIST
   const visitorsTable = document.getElementById('visitorsTable');
   if (visitorsTable) {
     let filtered = [...data.visitors];
@@ -204,27 +247,30 @@ document.addEventListener('DOMContentLoaded', () => {
       visitorsTable.innerHTML = pageData.map(v => {
         const overstay = v.status === 'active' ? getOverstay(v.checkIn, v.expectedDuration) : 0;
         const duration = v.checkOut ? Math.floor((new Date(v.checkOut) - new Date(v.checkIn))/60000) : Math.floor((Date.now() - new Date(v.checkIn))/60000);
+        const checkInTime = new Date(v.checkIn).toLocaleString('en-IN', {day:'2-digit', month:'short', hour:'2-digit', minute:'2-digit'});
+        const checkOutTime = v.checkOut ? new Date(v.checkOut).toLocaleString('en-IN', {day:'2-digit', month:'short', hour:'2-digit', minute:'2-digit'}) : '-';
         
         return `
         <tr class="border-b border-slate-100 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800/50">
           <td class="py-3 px-4 lg:px-6">
-            <div>
-              <p class="font-medium text-slate-800 dark:text-slate-200">${v.name}</p>
-              <div class="flex items-center gap-2 mt-0.5">
-                <span class="text-xs font-mono px-2 py-0.5 bg-indigo-50 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300 rounded">${v.passId}</span>
-                <span class="text-xs text-slate-500 dark:text-slate-400">${v.mobile}</span>
-              </div>
-            </div>
+            <p class="font-medium text-slate-800 dark:text-slate-200">${v.name}</p>
           </td>
+          <td class="py-3 px-4">
+            <span class="text-xs font-mono px-2 py-1 bg-indigo-50 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300 rounded">${v.passId}</span>
+          </td>
+          <td class="py-3 px-4 text-sm text-slate-600 dark:text-slate-400">${v.mobile}</td>
           <td class="py-3 px-4 text-sm hidden md:table-cell">
             <span class="px-2 py-1 rounded-lg text-xs bg-slate-100 dark:bg-slate-800">${v.purpose}</span>
           </td>
           <td class="py-3 px-4 text-sm hidden lg:table-cell">${v.personToMeet}</td>
           <td class="py-3 px-4 text-sm">
             <div>
-              <p>${new Date(v.checkIn).toLocaleString('en-IN', {day:'2-digit', month:'short', hour:'2-digit', minute:'2-digit'})}</p>
-              <p class="text-xs text-slate-500">${formatDuration(duration)} ${v.status==='active'?'(ongoing)':''}</p>
+              <p class="font-medium text-slate-700 dark:text-slate-300">${checkInTime}</p>
+              <p class="text-xs text-slate-500">${formatDuration(duration)}</p>
             </div>
+          </td>
+          <td class="py-3 px-4 text-sm">
+            ${v.checkOut ? `<p class="font-medium text-emerald-600 dark:text-emerald-400">${checkOutTime}</p>` : `<p class="text-slate-400">—</p>`}
           </td>
           <td class="py-3 px-4">
             <div class="flex flex-col gap-1">
@@ -285,31 +331,52 @@ document.addEventListener('DOMContentLoaded', () => {
       if (exitBtn) {
         const v = data.visitors.find(x => x.id === exitBtn.dataset.exit);
         if (v) {
-          v.status = 'completed';
-          v.checkOut = new Date().toISOString();
-          const lastVisit = v.visitHistory[v.visitHistory.length - 1];
-          if (lastVisit && !lastVisit.checkOut) lastVisit.checkOut = v.checkOut;
-          DVMS.saveData(data);
-          showToast(`${v.name} checked out`, 'success');
-          applyFilters();
+          const duration = Math.floor((Date.now() - new Date(v.checkIn))/60000);
+          showConfirm(
+            'Check Out Visitor?',
+            `Are you sure you want to check out this visitor?`,
+            `<div class="space-y-1.5">
+              <div class="flex justify-between"><span class="text-slate-500">Name:</span><span class="font-medium">${v.name}</span></div>
+              <div class="flex justify-between"><span class="text-slate-500">Pass ID:</span><span class="font-mono text-indigo-600">${v.passId}</span></div>
+              <div class="flex justify-between"><span class="text-slate-500">Check-in:</span><span>${new Date(v.checkIn).toLocaleString('en-IN')}</span></div>
+              <div class="flex justify-between"><span class="text-slate-500">Duration:</span><span class="font-medium">${formatDuration(duration)}</span></div>
+              <div class="flex justify-between"><span class="text-slate-500">Purpose:</span><span>${v.purpose}</span></div>
+            </div>`,
+            () => {
+              v.status = 'completed';
+              v.checkOut = new Date().toISOString();
+              const lastVisit = v.visitHistory[v.visitHistory.length - 1];
+              if (lastVisit && !lastVisit.checkOut) lastVisit.checkOut = v.checkOut;
+              DVMS.saveData(data);
+              showToast(`${v.name} checked out successfully`, 'success');
+              applyFilters();
+            },
+            'warning'
+          );
         }
       }
       if (editBtn) openEditModal(editBtn.dataset.edit);
       if (delBtn) {
-        if (confirm('Delete this visitor record permanently?')) {
-          data.visitors = data.visitors.filter(x => x.id !== delBtn.dataset.delete);
-          DVMS.saveData(data);
-          showToast('Record deleted', 'success');
-          applyFilters();
-        }
+        const v = data.visitors.find(x => x.id === delBtn.dataset.delete);
+        showConfirm(
+          'Delete Record?',
+          'This action cannot be undone. The visitor record will be permanently deleted.',
+          v ? `<div class="space-y-1.5"><div class="flex justify-between"><span class="text-slate-500">Name:</span><span class="font-medium">${v.name}</span></div><div class="flex justify-between"><span class="text-slate-500">Pass ID:</span><span class="font-mono">${v.passId}</span></div></div>` : '',
+          () => {
+            data.visitors = data.visitors.filter(x => x.id !== delBtn.dataset.delete);
+            DVMS.saveData(data);
+            showToast('Record deleted permanently', 'success');
+            applyFilters();
+          },
+          'danger'
+        );
       }
     });
 
     renderTable();
-    setInterval(renderTable, 60000); // Update overstay every minute
+    setInterval(renderTable, 60000);
   }
 
-  // VISITOR MODAL - Full History
   window.openVisitorModal = function(id) {
     const v = data.visitors.find(x => x.id === id);
     if (!v) return;
@@ -378,7 +445,6 @@ document.addEventListener('DOMContentLoaded', () => {
     modal.classList.remove('hidden');
   };
 
-  // EDIT MODAL
   window.openEditModal = function(id) {
     const v = data.visitors.find(x => x.id === id);
     if (!v) return;
@@ -437,7 +503,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   };
 
-  // BLACKLIST, CHARTS, TOAST (unchanged from previous)
   const blacklistTable = document.getElementById('blacklistTable');
   if (blacklistTable) {
     function renderBlacklist() {
