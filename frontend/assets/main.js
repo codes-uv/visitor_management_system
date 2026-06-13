@@ -1,21 +1,14 @@
-// Main JS for DVMS
-// Dark mode init
+// Main JS for DVMS v2 - with Pass ID, Edit, Overstay
 (function() {
   const saved = localStorage.getItem('dvms_theme');
   const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-  if (saved === 'dark' || (!saved && prefersDark)) {
-    document.documentElement.classList.add('dark');
-  }
+  if (saved === 'dark' || (!saved && prefersDark)) document.documentElement.classList.add('dark');
 })();
 
 function toggleTheme() {
   const isDark = document.documentElement.classList.toggle('dark');
   localStorage.setItem('dvms_theme', isDark ? 'dark' : 'light');
   updateThemeIcons();
-  // Update charts if needed
-  if (window.Chart) {
-    Chart.defaults.color = isDark ? '#cbd5e1' : '#64748b';
-  }
 }
 window.toggleTheme = toggleTheme;
 
@@ -28,148 +21,169 @@ function updateThemeIcons() {
   });
 }
 
+function formatDuration(minutes) {
+  if (minutes < 60) return `${minutes}m`;
+  const h = Math.floor(minutes/60);
+  const m = minutes % 60;
+  return m ? `${h}h ${m}m` : `${h}h`;
+}
+
+function getOverstay(checkIn, expectedDuration) {
+  const now = new Date();
+  const inTime = new Date(checkIn);
+  const expectedOut = new Date(inTime.getTime() + expectedDuration * 60000);
+  if (now > expectedOut) {
+    const overstayMs = now - expectedOut;
+    const overstayMin = Math.floor(overstayMs / 60000);
+    return overstayMin;
+  }
+  return 0;
+}
+
 document.addEventListener('DOMContentLoaded', () => {
   updateThemeIcons();
-  // Auth check
   const isLoginPage = window.location.pathname.includes('login.html');
   const user = localStorage.getItem('dvms_user');
-  if (!isLoginPage && !user) {
-    window.location.href = 'login.html';
-    return;
-  }
-  if (isLoginPage && user) {
-    window.location.href = 'dashboard.html';
-    return;
-  }
+  if (!isLoginPage && !user) { window.location.href = 'login.html'; return; }
+  if (isLoginPage && user) { window.location.href = 'dashboard.html'; return; }
 
-  // Init data
   const data = DVMS.getData();
 
-  // Sidebar toggle
+  // Sidebar
   const sidebar = document.getElementById('sidebar');
   const sidebarToggle = document.getElementById('sidebarToggle');
   const sidebarOverlay = document.getElementById('sidebarOverlay');
-  if (sidebarToggle) {
-    sidebarToggle.addEventListener('click', () => {
-      sidebar.classList.toggle('-translate-x-full');
-      sidebarOverlay.classList.toggle('hidden');
-    });
-  }
-  if (sidebarOverlay) {
-    sidebarOverlay.addEventListener('click', () => {
-      sidebar.classList.add('-translate-x-full');
-      sidebarOverlay.classList.add('hidden');
-    });
-  }
+  sidebarToggle?.addEventListener('click', () => {
+    sidebar.classList.toggle('-translate-x-full');
+    sidebarOverlay.classList.toggle('hidden');
+  });
+  sidebarOverlay?.addEventListener('click', () => {
+    sidebar.classList.add('-translate-x-full');
+    sidebarOverlay.classList.add('hidden');
+  });
 
-  // Logout
   document.querySelectorAll('[data-logout]').forEach(btn => {
     btn.addEventListener('click', () => {
       localStorage.removeItem('dvms_user');
       window.location.href = 'login.html';
     });
   });
+  document.querySelectorAll('[data-username]').forEach(el => el.textContent = user || 'Admin');
 
-  // Populate user name
-  document.querySelectorAll('[data-username]').forEach(el => {
-    el.textContent = user || 'Admin';
-  });
-
-  // DASHBOARD STATS
+  // DASHBOARD
   if (document.getElementById('statsGrid')) {
     const today = DVMS.today();
     const todayVisitors = data.visitors.filter(v => v.checkIn.startsWith(today));
     const activeVisitors = data.visitors.filter(v => v.status === 'active');
     const completedToday = todayVisitors.filter(v => v.status === 'completed');
+    const overstays = activeVisitors.filter(v => getOverstay(v.checkIn, v.expectedDuration) > 0);
     
     document.getElementById('statToday').textContent = todayVisitors.length;
     document.getElementById('statActive').textContent = activeVisitors.length;
     document.getElementById('statCompleted').textContent = completedToday.length;
     document.getElementById('statBlacklist').textContent = data.blacklist.length;
 
-    // Recent visitors table
+    // Add overstay counter to dashboard
+    const statsGrid = document.getElementById('statsGrid');
+    if (overstays.length > 0 && !document.getElementById('overstayAlert')) {
+      const alert = document.createElement('div');
+      alert.id = 'overstayAlert';
+      alert.className = 'sm:col-span-2 xl:col-span-4 bg-amber-50 mb-[1.5rem] dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 rounded-2xl p-4 flex items-center justify-between';
+      alert.innerHTML = `
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 bg-amber-100 dark:bg-amber-900 rounded-xl flex items-center justify-center">
+            <svg class="w-5 h-5 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+          </div>
+          <div>
+            <p class="font-medium text-amber-900 dark:text-amber-100">${overstays.length} Visitor(s) Overstaying</p>
+            <p class="text-sm text-amber-700 dark:text-amber-300">${overstays.map(v => `${v.name} (+${formatDuration(getOverstay(v.checkIn, v.expectedDuration))})`).join(', ')}</p>
+          </div>
+        </div>
+        <a href="visitors.html" class="text-sm font-medium text-amber-700 dark:text-amber-300 hover:underline">View →</a>
+      `;
+      statsGrid.parentNode.insertBefore(alert, statsGrid.nextSibling);
+    }
+
     const recentTbody = document.getElementById('recentVisitors');
     if (recentTbody) {
-      recentTbody.innerHTML = todayVisitors.slice(0,5).map(v => `
+      recentTbody.innerHTML = todayVisitors.slice(0,5).map(v => {
+        const overstay = v.status === 'active' ? getOverstay(v.checkIn, v.expectedDuration) : 0;
+        return `
         <tr class="border-b border-slate-100 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800/50">
           <td class="py-3 px-4">
-            <div class="flex items-center gap-3">
-              <img src="${v.photo}" class="w-9 h-9 rounded-full" />
-              <div>
-                <p class="font-medium text-slate-800 dark:text-slate-200">${v.name}</p>
-                <p class="text-xs text-slate-500 dark:text-slate-400">${v.id}</p>
-              </div>
+            <div>
+              <p class="font-medium text-slate-800 dark:text-slate-200">${v.name}</p>
+              <p class="text-xs text-slate-500 dark:text-slate-400 font-mono">${v.passId}</p>
             </div>
           </td>
           <td class="py-3 px-4 text-sm">${v.personToMeet}</td>
           <td class="py-3 px-4 text-sm">${v.purpose}</td>
           <td class="py-3 px-4">
-            <span class="px-2.5 py-1 rounded-full text-xs font-medium ${v.status==='active'?'bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300':'bg-slate-200 text-slate-700 dark:bg-slate-700 dark:text-slate-300'}">
-              ${v.status==='active'?'Active':'Completed'}
-            </span>
+            <div class="flex items-center gap-2">
+              <span class="px-2.5 py-1 rounded-full text-xs font-medium ${v.status==='active'?'bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300':'bg-slate-200 text-slate-700 dark:bg-slate-700 dark:text-slate-300'}">
+                ${v.status}
+              </span>
+              ${overstay > 0 ? `<span class="px-2 py-0.5 rounded text-[10px] font-medium bg-amber-100 text-amber-700 dark:bg-amber-950 dark:text-amber-300">+${formatDuration(overstay)}</span>` : ''}
+            </div>
           </td>
           <td class="py-3 px-4 text-sm text-slate-500 dark:text-slate-400">${new Date(v.checkIn).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}</td>
         </tr>
-      `).join('');
+      `}).join('');
     }
   }
 
-  // ADD VISITOR FORM
+  // ADD VISITOR
   const addForm = document.getElementById('addVisitorForm');
   if (addForm) {
     addForm.addEventListener('submit', (e) => {
       e.preventDefault();
-      const formData = new FormData(addForm);
+      const fd = new FormData(addForm);
       const visitor = {
         id: DVMS.generateId(),
-        name: formData.get('name').trim(),
-        mobile: formData.get('mobile').trim(),
-        address: formData.get('address').trim(),
-        purpose: formData.get('purpose'),
-        personToMeet: formData.get('person').trim(),
+        passId: DVMS.generatePassId(),
+        name: fd.get('name').trim(),
+        mobile: fd.get('mobile').trim(),
+        address: fd.get('address').trim(),
+        purpose: fd.get('purpose'),
+        personToMeet: fd.get('person').trim(),
+        expectedDuration: parseInt(fd.get('duration')) || 60,
         checkIn: new Date().toISOString(),
         checkOut: null,
         status: 'active',
-        photo: `https://i.pravatar.cc/150?u=${Date.now()}`
+        photo: `https://i.pravatar.cc/150?u=${Date.now()}`,
+        visitHistory: []
       };
+      visitor.visitHistory.push({ checkIn: visitor.checkIn, checkOut: null, purpose: visitor.purpose, duration: visitor.expectedDuration });
 
-      // Validation
       let valid = true;
       addForm.querySelectorAll('[required]').forEach(input => {
         const error = input.parentElement.querySelector('.error-msg');
         if (!input.value.trim()) {
           valid = false;
           input.classList.add('border-red-500');
-          if (error) error.classList.remove('hidden');
+          error?.classList.remove('hidden');
         } else {
           input.classList.remove('border-red-500');
-          if (error) error.classList.add('hidden');
+          error?.classList.add('hidden');
         }
       });
       
-      const mobile = visitor.mobile;
-      if (!/^[6-9]\d{9}$/.test(mobile)) {
+      if (!/^[6-9]\d{9}$/.test(visitor.mobile)) {
         valid = false;
-        const mobileInput = addForm.querySelector('[name=mobile]');
-        mobileInput.classList.add('border-red-500');
-        mobileInput.parentElement.querySelector('.error-msg').textContent = 'Enter valid 10-digit Indian mobile';
-        mobileInput.parentElement.querySelector('.error-msg').classList.remove('hidden');
+        showToast('Enter valid 10-digit mobile', 'error');
       }
 
-      // Blacklist check
-      const isBlacklisted = data.blacklist.some(b => b.mobile === mobile);
-      if (isBlacklisted) {
-        showToast('Visitor is blacklisted! Cannot check-in.', 'error');
+      if (data.blacklist.some(b => b.mobile === visitor.mobile)) {
+        showToast('Visitor is blacklisted!', 'error');
         return;
       }
-
       if (!valid) return;
 
       data.visitors.unshift(visitor);
       DVMS.saveData(data);
-      showToast('Visitor checked-in successfully!', 'success');
+      showToast(`Checked-in! Pass: ${visitor.passId}`, 'success');
       addForm.reset();
-      setTimeout(() => window.location.href = 'visitors.html', 800);
+      setTimeout(() => window.location.href = 'visitors.html', 1000);
     });
   }
 
@@ -178,7 +192,7 @@ document.addEventListener('DOMContentLoaded', () => {
   if (visitorsTable) {
     let filtered = [...data.visitors];
     let currentPage = 1;
-    const perPage = 8;
+    const perPage = 10;
 
     const searchInput = document.getElementById('searchVisitor');
     const statusFilter = document.getElementById('statusFilter');
@@ -187,28 +201,42 @@ document.addEventListener('DOMContentLoaded', () => {
       const start = (currentPage - 1) * perPage;
       const pageData = filtered.slice(start, start + perPage);
       
-      visitorsTable.innerHTML = pageData.map(v => `
+      visitorsTable.innerHTML = pageData.map(v => {
+        const overstay = v.status === 'active' ? getOverstay(v.checkIn, v.expectedDuration) : 0;
+        const duration = v.checkOut ? Math.floor((new Date(v.checkOut) - new Date(v.checkIn))/60000) : Math.floor((Date.now() - new Date(v.checkIn))/60000);
+        
+        return `
         <tr class="border-b border-slate-100 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800/50">
-          <td class="py-3 px-4">
-            <div class="flex items-center gap-3">
-              <img src="${v.photo}" class="w-10 h-10 rounded-full object-cover" />
-              <div>
-                <p class="font-medium text-slate-800 dark:text-slate-200">${v.name}</p>
-                <p class="text-xs text-slate-500 dark:text-slate-400">${v.id} • ${v.mobile}</p>
+          <td class="py-3 px-4 lg:px-6">
+            <div>
+              <p class="font-medium text-slate-800 dark:text-slate-200">${v.name}</p>
+              <div class="flex items-center gap-2 mt-0.5">
+                <span class="text-xs font-mono px-2 py-0.5 bg-indigo-50 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300 rounded">${v.passId}</span>
+                <span class="text-xs text-slate-500 dark:text-slate-400">${v.mobile}</span>
               </div>
             </div>
           </td>
-          <td class="py-3 px-4 text-sm hidden md:table-cell">${v.purpose}</td>
+          <td class="py-3 px-4 text-sm hidden md:table-cell">
+            <span class="px-2 py-1 rounded-lg text-xs bg-slate-100 dark:bg-slate-800">${v.purpose}</span>
+          </td>
           <td class="py-3 px-4 text-sm hidden lg:table-cell">${v.personToMeet}</td>
-          <td class="py-3 px-4 text-sm">${new Date(v.checkIn).toLocaleString('en-IN', {day:'2-digit', month:'short', hour:'2-digit', minute:'2-digit'})}</td>
-          <td class="py-3 px-4">
-            <span class="px-2.5 py-1 rounded-full text-xs font-medium ${v.status==='active'?'bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300':'bg-slate-200 text-slate-700 dark:bg-slate-700 dark:text-slate-300'}">
-              ${v.status}
-            </span>
+          <td class="py-3 px-4 text-sm">
+            <div>
+              <p>${new Date(v.checkIn).toLocaleString('en-IN', {day:'2-digit', month:'short', hour:'2-digit', minute:'2-digit'})}</p>
+              <p class="text-xs text-slate-500">${formatDuration(duration)} ${v.status==='active'?'(ongoing)':''}</p>
+            </div>
           </td>
           <td class="py-3 px-4">
-            <div class="flex items-center gap-2">
-              <button data-view="${v.id}" class="p-1.5 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg text-slate-600 dark:text-slate-400" title="View">
+            <div class="flex flex-col gap-1">
+              <span class="px-2.5 py-1 rounded-full text-xs font-medium w-fit ${v.status==='active'?'bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300':'bg-slate-200 text-slate-700 dark:bg-slate-700 dark:text-slate-300'}">
+                ${v.status}
+              </span>
+              ${overstay > 0 ? `<span class="px-2 py-0.5 rounded text-[10px] font-medium bg-red-100 text-red-700 dark:bg-red-950 dark:text-red-300 w-fit">OVERSTAY +${formatDuration(overstay)}</span>` : ''}
+            </div>
+          </td>
+          <td class="py-3 px-4 lg:px-6">
+            <div class="flex items-center justify-end gap-1">
+              <button data-view="${v.id}" class="p-1.5 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg text-slate-600 dark:text-slate-400" title="View History">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
               </button>
               <button data-edit="${v.id}" class="p-1.5 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg text-slate-600 dark:text-slate-400" title="Edit">
@@ -216,26 +244,27 @@ document.addEventListener('DOMContentLoaded', () => {
               </button>
               ${v.status==='active' ? `<button data-exit="${v.id}" class="p-1.5 hover:bg-red-50 dark:hover:bg-red-950 rounded-lg text-red-600 dark:text-red-400" title="Check Out">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
-              </button>` : ''}
+              </button>` : `<button data-delete="${v.id}" class="p-1.5 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg text-slate-400" title="Delete Record">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+              </button>`}
             </div>
           </td>
         </tr>
-      `).join('');
+      `}).join('');
 
-      // Pagination
       const totalPages = Math.ceil(filtered.length / perPage);
       document.getElementById('paginationInfo').textContent = `Showing ${start+1}-${Math.min(start+perPage, filtered.length)} of ${filtered.length}`;
       document.getElementById('prevPage').disabled = currentPage === 1;
-      document.getElementById('nextPage').disabled = currentPage === totalPages;
+      document.getElementById('nextPage').disabled = currentPage === totalPages || totalPages === 0;
     }
 
     function applyFilters() {
       const q = searchInput.value.toLowerCase();
       const status = statusFilter.value;
       filtered = data.visitors.filter(v => {
-        const matchesSearch = v.name.toLowerCase().includes(q) || v.mobile.includes(q) || v.id.toLowerCase().includes(q);
+        const matches = v.name.toLowerCase().includes(q) || v.mobile.includes(q) || v.passId.toLowerCase().includes(q) || v.id.toLowerCase().includes(q);
         const matchesStatus = status === 'all' || v.status === status;
-        return matchesSearch && matchesStatus;
+        return matches && matchesStatus;
       });
       currentPage = 1;
       renderTable();
@@ -246,11 +275,11 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('prevPage')?.addEventListener('click', () => { if (currentPage>1) {currentPage--; renderTable();}});
     document.getElementById('nextPage')?.addEventListener('click', () => { const total = Math.ceil(filtered.length/perPage); if (currentPage<total) {currentPage++; renderTable();}});
 
-    // Actions
     visitorsTable.addEventListener('click', (e) => {
       const viewBtn = e.target.closest('[data-view]');
       const exitBtn = e.target.closest('[data-exit]');
       const editBtn = e.target.closest('[data-edit]');
+      const delBtn = e.target.closest('[data-delete]');
       
       if (viewBtn) openVisitorModal(viewBtn.dataset.view);
       if (exitBtn) {
@@ -258,102 +287,171 @@ document.addEventListener('DOMContentLoaded', () => {
         if (v) {
           v.status = 'completed';
           v.checkOut = new Date().toISOString();
+          const lastVisit = v.visitHistory[v.visitHistory.length - 1];
+          if (lastVisit && !lastVisit.checkOut) lastVisit.checkOut = v.checkOut;
           DVMS.saveData(data);
           showToast(`${v.name} checked out`, 'success');
           applyFilters();
         }
       }
-      if (editBtn) showToast('Edit feature - demo only', 'info');
+      if (editBtn) openEditModal(editBtn.dataset.edit);
+      if (delBtn) {
+        if (confirm('Delete this visitor record permanently?')) {
+          data.visitors = data.visitors.filter(x => x.id !== delBtn.dataset.delete);
+          DVMS.saveData(data);
+          showToast('Record deleted', 'success');
+          applyFilters();
+        }
+      }
     });
 
     renderTable();
+    setInterval(renderTable, 60000); // Update overstay every minute
   }
 
-  // VISITOR MODAL
-  function openVisitorModal(id) {
+  // VISITOR MODAL - Full History
+  window.openVisitorModal = function(id) {
     const v = data.visitors.find(x => x.id === id);
     if (!v) return;
     const modal = document.getElementById('visitorModal');
     const content = document.getElementById('visitorModalContent');
-    const history = data.history.find(h => h.visitorId === id)?.visits || 1;
+    const overstay = v.status === 'active' ? getOverstay(v.checkIn, v.expectedDuration) : 0;
     
     content.innerHTML = `
       <div class="flex items-start gap-4">
-        <img src="${v.photo}" class="w-20 h-20 rounded-2xl object-cover" />
+        <div class="w-20 h-20 rounded-2xl bg-gradient-to-br from-indigo-600 to-violet-600 flex items-center justify-center text-white text-2xl font-bold">
+          ${v.name.split(' ').map(n=>n[0]).join('').slice(0,2)}
+        </div>
         <div class="flex-1">
-          <h3 class="text-xl font-semibold text-slate-900 dark:text-white">${v.name}</h3>
-          <p class="text-slate-500 dark:text-slate-400">${v.id} • ${v.mobile}</p>
-          <div class="mt-2 flex gap-2">
-            <span class="px-2.5 py-1 rounded-full text-xs font-medium ${v.status==='active'?'bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300':'bg-slate-200 text-slate-700 dark:bg-slate-700 dark:text-slate-300'}">${v.status.toUpperCase()}</span>
-            <span class="px-2.5 py-1 rounded-full text-xs font-medium bg-indigo-100 text-indigo-700 dark:bg-indigo-950 dark:text-indigo-300">${history} visits</span>
+          <div class="flex items-start justify-between">
+            <div>
+              <h3 class="text-xl font-semibold">${v.name}</h3>
+              <p class="text-slate-500 dark:text-slate-400">${v.mobile} • ${v.address}</p>
+              <div class="mt-2 flex flex-wrap gap-2">
+                <span class="px-3 py-1 rounded-full text-xs font-mono bg-indigo-100 text-indigo-700 dark:bg-indigo-950 dark:text-indigo-300">${v.passId}</span>
+                <span class="px-2.5 py-1 rounded-full text-xs font-medium ${v.status==='active'?'bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300':'bg-slate-200 text-slate-700 dark:bg-slate-700 dark:text-slate-300'}">${v.status.toUpperCase()}</span>
+                ${overstay > 0 ? `<span class="px-2.5 py-1 rounded-full text-xs font-medium bg-red-100 text-red-700 dark:bg-red-950 dark:text-red-300">OVERSTAY +${formatDuration(overstay)}</span>` : ''}
+              </div>
+            </div>
+            <button onclick="document.getElementById('visitorModal').classList.add('hidden')" class="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+            </button>
           </div>
         </div>
-        <button onclick="document.getElementById('visitorModal').classList.add('hidden')" class="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-        </button>
       </div>
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
-        <div class="bg-slate-50 dark:bg-slate-800/50 p-4 rounded-xl">
-          <p class="text-xs text-slate-500 dark:text-slate-400 uppercase tracking-wide">Purpose</p>
-          <p class="font-medium mt-1">${v.purpose}</p>
-        </div>
-        <div class="bg-slate-50 dark:bg-slate-800/50 p-4 rounded-xl">
-          <p class="text-xs text-slate-500 dark:text-slate-400 uppercase tracking-wide">Person to Meet</p>
-          <p class="font-medium mt-1">${v.personToMeet}</p>
-        </div>
-        <div class="bg-slate-50 dark:bg-slate-800/50 p-4 rounded-xl">
-          <p class="text-xs text-slate-500 dark:text-slate-400 uppercase tracking-wide">Address</p>
-          <p class="font-medium mt-1">${v.address}</p>
-        </div>
-        <div class="bg-slate-50 dark:bg-slate-800/50 p-4 rounded-xl">
-          <p class="text-xs text-slate-500 dark:text-slate-400 uppercase tracking-wide">Check-in</p>
-          <p class="font-medium mt-1">${new Date(v.checkIn).toLocaleString('en-IN')}</p>
-        </div>
-        ${v.checkOut ? `<div class="bg-slate-50 dark:bg-slate-800/50 p-4 rounded-xl md:col-span-2">
-          <p class="text-xs text-slate-500 dark:text-slate-400 uppercase tracking-wide">Check-out</p>
-          <p class="font-medium mt-1">${new Date(v.checkOut).toLocaleString('en-IN')}</p>
-        </div>` : ''}
+      
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mt-6">
+        <div class="bg-slate-50 dark:bg-slate-800/50 p-3 rounded-xl"><p class="text-xs text-slate-500">Purpose</p><p class="font-medium">${v.purpose}</p></div>
+        <div class="bg-slate-50 dark:bg-slate-800/50 p-3 rounded-xl"><p class="text-xs text-slate-500">Host</p><p class="font-medium">${v.personToMeet}</p></div>
+        <div class="bg-slate-50 dark:bg-slate-800/50 p-3 rounded-xl"><p class="text-xs text-slate-500">Expected</p><p class="font-medium">${formatDuration(v.expectedDuration)}</p></div>
+        <div class="bg-slate-50 dark:bg-slate-800/50 p-3 rounded-xl"><p class="text-xs text-slate-500">Visits</p><p class="font-medium">${v.visitHistory.length}</p></div>
       </div>
+
       <div class="mt-6">
-        <h4 class="font-semibold mb-3">Visit History</h4>
-        <div class="space-y-2">
-          ${[...Array(Math.min(history,4))].map((_,i) => `
-            <div class="flex items-center justify-between p-3 bg-slate-50 dark:bg-slate-800/50 rounded-lg">
-              <div>
-                <p class="text-sm font-medium">Visit #${history-i}</p>
-                <p class="text-xs text-slate-500 dark:text-slate-400">${new Date(Date.now() - i*86400000*7).toLocaleDateString('en-IN')}</p>
+        <h4 class="font-semibold mb-3 flex items-center gap-2">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+          Check-In / Check-Out History
+        </h4>
+        <div class="space-y-2 max-h-64 overflow-y-auto">
+          ${v.visitHistory.slice().reverse().map((visit, idx) => {
+            const inTime = new Date(visit.checkIn);
+            const outTime = visit.checkOut ? new Date(visit.checkOut) : null;
+            const dur = outTime ? Math.floor((outTime - inTime)/60000) : Math.floor((Date.now() - inTime)/60000);
+            return `
+            <div class="flex items-center justify-between p-3 bg-slate-50 dark:bg-slate-800/50 rounded-xl">
+              <div class="flex items-center gap-3">
+                <div class="w-8 h-8 rounded-lg bg-white dark:bg-slate-900 flex items-center justify-center text-xs font-medium">${v.visitHistory.length - idx}</div>
+                <div>
+                  <p class="text-sm font-medium">${inTime.toLocaleDateString('en-IN', {day:'2-digit', month:'short', year:'numeric'})} • ${visit.purpose}</p>
+                  <p class="text-xs text-slate-500 dark:text-slate-400">In: ${inTime.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})} ${outTime ? `• Out: ${outTime.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}` : '• Still inside'}</p>
+                </div>
               </div>
-              <span class="text-xs px-2 py-1 bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300 rounded-full">Completed</span>
+              <div class="text-right">
+                <p class="text-sm font-medium">${formatDuration(dur)}</p>
+                <p class="text-xs ${outTime ? 'text-emerald-600' : 'text-amber-600'}">${outTime ? 'Completed' : 'Active'}</p>
+              </div>
             </div>
-          `).join('')}
+          `}).join('')}
         </div>
       </div>
     `;
     modal.classList.remove('hidden');
-  }
-  window.openVisitorModal = openVisitorModal;
+  };
 
-  // BLACKLIST
+  // EDIT MODAL
+  window.openEditModal = function(id) {
+    const v = data.visitors.find(x => x.id === id);
+    if (!v) return;
+    
+    const modal = document.getElementById('visitorModal');
+    const content = document.getElementById('visitorModalContent');
+    
+    content.innerHTML = `
+      <div class="flex items-center justify-between mb-6">
+        <h3 class="text-xl font-semibold">Edit Visitor Record</h3>
+        <button onclick="document.getElementById('visitorModal').classList.add('hidden')" class="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+      </div>
+      <form id="editForm" class="space-y-4">
+        <input type="hidden" name="id" value="${v.id}">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div><label class="text-sm font-medium">Pass ID</label><input value="${v.passId}" disabled class="mt-1 w-full px-3 py-2 border border-slate-300 dark:border-slate-700 rounded-xl bg-slate-50 dark:bg-slate-800 font-mono text-sm"></div>
+          <div><label class="text-sm font-medium">Status</label><select name="status" class="mt-1 w-full px-3 py-2 border border-slate-300 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-950"><option ${v.status==='active'?'selected':''} value="active">Active</option><option ${v.status==='completed'?'selected':''} value="completed">Completed</option></select></div>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div><label class="text-sm font-medium">Name *</label><input name="name" value="${v.name}" required class="mt-1 w-full px-3 py-2 border border-slate-300 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-950"></div>
+          <div><label class="text-sm font-medium">Mobile *</label><input name="mobile" value="${v.mobile}" required class="mt-1 w-full px-3 py-2 border border-slate-300 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-950"></div>
+        </div>
+        <div><label class="text-sm font-medium">Address</label><input name="address" value="${v.address}" class="mt-1 w-full px-3 py-2 border border-slate-300 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-950"></div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div><label class="text-sm font-medium">Purpose</label><select name="purpose" class="mt-1 w-full px-3 py-2 border border-slate-300 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-950"><option ${v.purpose==='Interview'?'selected':''}>Interview</option><option ${v.purpose==='Client Meeting'?'selected':''}>Client Meeting</option><option ${v.purpose==='Delivery'?'selected':''}>Delivery</option><option ${v.purpose==='Maintenance'?'selected':''}>Maintenance</option><option ${v.purpose==='Vendor Discussion'?'selected':''}>Vendor Discussion</option><option ${v.purpose==='Personal'?'selected':''}>Personal</option><option ${v.purpose==='Guest'?'selected':''}>Guest</option><option ${v.purpose==='Audit'?'selected':''}>Audit</option></select></div>
+          <div><label class="text-sm font-medium">Person to Meet</label><input name="person" value="${v.personToMeet}" class="mt-1 w-full px-3 py-2 border border-slate-300 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-950"></div>
+          <div><label class="text-sm font-medium">Duration</label><select name="duration" class="mt-1 w-full px-3 py-2 border border-slate-300 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-950"><option value="30" ${v.expectedDuration==30?'selected':''}>30 min</option><option value="60" ${v.expectedDuration==60?'selected':''}>1 hour</option><option value="120" ${v.expectedDuration==120?'selected':''}>2 hours</option><option value="240" ${v.expectedDuration==240?'selected':''}>4 hours</option><option value="480" ${v.expectedDuration==480?'selected':''}>8 hours</option></select></div>
+        </div>
+        <div class="flex gap-3 pt-4">
+          <button type="submit" class="flex-1 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-medium">Save Changes</button>
+          <button type="button" onclick="document.getElementById('visitorModal').classList.add('hidden')" class="px-6 py-2.5 border border-slate-300 dark:border-slate-700 rounded-xl">Cancel</button>
+        </div>
+      </form>
+    `;
+    modal.classList.remove('hidden');
+    
+    document.getElementById('editForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const fd = new FormData(e.target);
+      v.name = fd.get('name');
+      v.mobile = fd.get('mobile');
+      v.address = fd.get('address');
+      v.purpose = fd.get('purpose');
+      v.personToMeet = fd.get('person');
+      v.expectedDuration = parseInt(fd.get('duration'));
+      v.status = fd.get('status');
+      if (v.status === 'completed' && !v.checkOut) v.checkOut = new Date().toISOString();
+      if (v.status === 'active' && v.checkOut) v.checkOut = null;
+      
+      DVMS.saveData(data);
+      showToast('Visitor record updated', 'success');
+      modal.classList.add('hidden');
+      location.reload();
+    });
+  };
+
+  // BLACKLIST, CHARTS, TOAST (unchanged from previous)
   const blacklistTable = document.getElementById('blacklistTable');
   if (blacklistTable) {
     function renderBlacklist() {
       blacklistTable.innerHTML = data.blacklist.map(b => `
         <tr class="border-b border-slate-100 dark:border-slate-800">
-          <td class="py-3 px-4">
-            <p class="font-medium">${b.name}</p>
-            <p class="text-xs text-slate-500 dark:text-slate-400">${b.id}</p>
-          </td>
+          <td class="py-3 px-4"><p class="font-medium">${b.name}</p><p class="text-xs text-slate-500 dark:text-slate-400">${b.id}</p></td>
           <td class="py-3 px-4 text-sm">${b.mobile}</td>
           <td class="py-3 px-4 text-sm max-w-xs truncate">${b.reason}</td>
           <td class="py-3 px-4 text-sm hidden md:table-cell">${b.addedOn}</td>
-          <td class="py-3 px-4">
-            <button data-remove="${b.id}" class="px-3 py-1.5 text-xs font-medium bg-red-50 text-red-600 hover:bg-red-100 dark:bg-red-950 dark:text-red-400 rounded-lg">Remove</button>
-          </td>
+          <td class="py-3 px-4"><button data-remove="${b.id}" class="px-3 py-1.5 text-xs font-medium bg-red-50 text-red-600 hover:bg-red-100 dark:bg-red-950 dark:text-red-400 rounded-lg">Remove</button></td>
         </tr>
       `).join('');
     }
     renderBlacklist();
-
     blacklistTable.addEventListener('click', (e) => {
       const btn = e.target.closest('[data-remove]');
       if (btn) {
@@ -361,80 +459,33 @@ document.addEventListener('DOMContentLoaded', () => {
         DVMS.saveData(data);
         renderBlacklist();
         showToast('Removed from blacklist', 'success');
-        document.getElementById('statBlacklist') && (document.getElementById('statBlacklist').textContent = data.blacklist.length);
       }
-    });
-
-    const blForm = document.getElementById('blacklistForm');
-    blForm?.addEventListener('submit', (e) => {
-      e.preventDefault();
-      const fd = new FormData(blForm);
-      const entry = {
-        id: 'B' + Math.floor(100 + Math.random()*900),
-        name: fd.get('name'),
-        mobile: fd.get('mobile'),
-        reason: fd.get('reason'),
-        addedOn: new Date().toISOString().split('T')[0],
-        addedBy: user
-      };
-      data.blacklist.unshift(entry);
-      DVMS.saveData(data);
-      renderBlacklist();
-      blForm.reset();
-      showToast('Added to blacklist', 'success');
     });
   }
 
-  // REPORTS CHARTS
   if (document.getElementById('visitsChart')) {
-    const ctx = document.getElementById('visitsChart');
-    new Chart(ctx, {
+    new Chart(document.getElementById('visitsChart'), {
       type: 'line',
-      data: {
-        labels: ['Mon','Tue','Wed','Thu','Fri','Sat','Today'],
-        datasets: [{
-          label: 'Visitors',
-          data: [12,19,15,22,18,9,8],
-          borderColor: '#4f46e5',
-          backgroundColor: 'rgba(79,70,229,0.1)',
-          tension: 0.4,
-          fill: true
-        }]
-      },
+      data: { labels: ['Mon','Tue','Wed','Thu','Fri','Sat','Today'], datasets: [{ label: 'Visitors', data: [12,19,15,22,18,9,8], borderColor: '#4f46e5', backgroundColor: 'rgba(79,70,229,0.1)', tension: 0.4, fill: true }] },
       options: { responsive: true, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true } } }
     });
   }
-  if (document.getElementById('purposeChart')) {
-    const ctx2 = document.getElementById('purposeChart');
-    new Chart(ctx2, {
-      type: 'doughnut',
-      data: {
-        labels: ['Interview','Meeting','Delivery','Maintenance','Other'],
-        datasets: [{ data: [35,25,20,12,8], backgroundColor: ['#4f46e5','#06b6d4','#10b981','#f59e0b','#8b5cf6'] }]
-      },
-      options: { responsive: true, plugins: { legend: { position: 'bottom' } } }
-    });
-  }
 
-  // Toast
-  function showToast(msg, type='success') {
+  window.showToast = function(msg, type='success') {
     const toast = document.createElement('div');
     const colors = { success: 'bg-emerald-600', error: 'bg-red-600', info: 'bg-slate-800' };
-    toast.className = `fixed bottom-6 right-6 ${colors[type]} text-white px-4 py-3 rounded-xl shadow-lg z-50 flex items-center gap-2 transform translate-y-4 opacity-0 transition-all`;
-    toast.innerHTML = `<span>${msg}</span>`;
+    toast.className = `fixed bottom-6 right-6 ${colors[type]} text-white px-4 py-3 rounded-xl shadow-lg z-50 transform translate-y-4 opacity-0 transition-all`;
+    toast.textContent = msg;
     document.body.appendChild(toast);
-    setTimeout(() => { toast.classList.remove('translate-y-4','opacity-0'); }, 10);
+    setTimeout(() => toast.classList.remove('translate-y-4','opacity-0'), 10);
     setTimeout(() => { toast.classList.add('translate-y-4','opacity-0'); setTimeout(()=>toast.remove(),300); }, 3000);
-  }
-  window.showToast = showToast;
+  };
 });
 
-// Login handler
 function handleLogin(e) {
   e.preventDefault();
   const user = document.getElementById('username').value;
-  const pass = document.getElementById('password').value;
-  if (user && pass) {
+  if (user) {
     localStorage.setItem('dvms_user', user);
     window.location.href = 'dashboard.html';
   }

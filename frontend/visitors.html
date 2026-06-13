@@ -9,36 +9,76 @@
   <script>tailwind.config = { darkMode: 'class', theme: { extend: { fontFamily: { sans: ['Inter','system-ui'] } } } }</script>
   <script>const t=localStorage.getItem('dvms_theme');if(t==='dark'||(!t&&matchMedia('(prefers-color-scheme: dark)').matches))document.documentElement.classList.add('dark')</script>
 </head>
-<body class="bg-slate-50 dark:bg-slate-950 font-sans text-slate-900 dark:text-slate-100">
-  <div class="flex min-h-screen">
-    <aside id="sidebar" class="fixed lg:static inset-y-0 left-0 z-40 w-72 bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 transform -translate-x-full lg:translate-x-0 transition-transform">
-      <div class="h-full flex flex-col">
-        <div class="p-6 border-b border-slate-100 dark:border-slate-800">
-          <div class="flex items-center gap-3">
-            <div class="w-10 h-10 bg-indigo-600 rounded-xl flex items-center justify-center"><svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg></div>
-            <div><h1 class="font-bold">VisitorHub</h1><p class="text-xs text-slate-500 dark:text-slate-400">Admin Panel</p></div>
+<body class="bg-slate-50 dark:bg-slate-950 font-sans text-slate-900 dark:text-slate-100 h-full overflow-hidden">
+  <div class="flex h-full">
+    <!-- SIDEBAR - IDENTICAL TO DASHBOARD -->
+    <aside id="sidebar" class="fixed inset-y-0 left-0 z-40 w-72 bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 transform -translate-x-full lg:translate-x-0 transition-transform duration-300 flex flex-col">
+      <div class="h-[73px] flex items-center px-6 border-b border-slate-200 dark:border-slate-800 shrink-0">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 bg-indigo-600 rounded-xl flex items-center justify-center shadow-lg shadow-indigo-600/20">
+            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+          </div>
+          <div>
+            <h1 class="font-bold text-slate-900 dark:text-white leading-tight">VisitorHub</h1>
+            <p class="text-xs text-slate-500 dark:text-slate-400 leading-tight">Admin Panel</p>
           </div>
         </div>
-        <nav class="flex-1 p-4 space-y-1">
-          <a href="dashboard.html" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800">Dashboard</a>
-          <a href="visitors.html" class="flex items-center gap-3 px-3 py-2.5 rounded-xl bg-indigo-50 dark:bg-indigo-950/50 text-indigo-700 dark:text-indigo-300 font-medium">Visitors</a>
-          <a href="dashboard.html#add" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800">Add Visitor</a>
-          <a href="reports.html" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800">Reports</a>
-        </nav>
+      </div>
+      
+      <nav class="flex-1 overflow-y-auto p-4 space-y-1">
+        <a href="dashboard.html" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
+          <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+          <span>Dashboard</span>
+        </a>
+        <a href="visitors.html" class="flex items-center gap-3 px-3 py-2.5 rounded-xl bg-indigo-50 dark:bg-indigo-950/50 text-indigo-700 dark:text-indigo-300 font-medium">
+          <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+          <span>Visitors</span>
+        </a>
+        <a href="dashboard.html#add" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
+          <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+          <span>Add Visitor</span>
+        </a>
+        <a href="dashboard.html#blacklist" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
+          <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"/></svg>
+          <span>Blacklist</span>
+        </a>
+        <a href="reports.html" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
+          <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+          <span>Reports</span>
+        </a>
+      </nav>
+
+      <div class="p-4 border-t border-slate-200 dark:border-slate-800 shrink-0 bg-white dark:bg-slate-900">
+        <div class="flex items-center gap-3">
+          <img src="https://i.pravatar.cc/40?u=admin" class="w-9 h-9 rounded-full ring-2 ring-slate-200 dark:ring-slate-700">
+          <div class="flex-1 min-w-0">
+            <p class="text-sm font-medium truncate" data-username>admin</p>
+            <p class="text-xs text-slate-500 dark:text-slate-400 truncate">Security Admin</p>
+          </div>
+          <button data-logout class="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg text-slate-500 hover:text-red-600 dark:hover:text-red-400 transition-colors shrink-0" title="Logout">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+          </button>
+        </div>
       </div>
     </aside>
+
     <div id="sidebarOverlay" class="fixed inset-0 bg-black/50 z-30 hidden lg:hidden"></div>
 
-    <div class="flex-1 min-w-0">
-      <header class="sticky top-0 z-20 bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border-b border-slate-200 dark:border-slate-800">
-        <div class="flex items-center justify-between px-4 lg:px-8 py-4">
-          <div class="flex items-center gap-3">
-            <button id="sidebarToggle" class="lg:hidden p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg></button>
-            <div><h2 class="text-xl lg:text-2xl font-bold">Visitors</h2><p class="text-sm text-slate-500 dark:text-slate-400 hidden sm:block">Manage all visitor records</p></div>
+    <div class="flex-1 lg:ml-72 flex flex-col h-full">
+      <header class="h-[73px] shrink-0 sticky top-0 z-20 bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border-b border-slate-200 dark:border-slate-800">
+        <div class="h-full flex items-center justify-between px-4 lg:px-8">
+          <div class="flex items-center gap-3 min-w-0">
+            <button id="sidebarToggle" class="lg:hidden p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl shrink-0">
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+            </button>
+            <div class="min-w-0">
+              <h2 class="text-xl lg:text-2xl font-bold truncate">Visitors</h2>
+              <p class="text-sm text-slate-500 dark:text-slate-400 hidden sm:block truncate">Manage all visitor records</p>
+            </div>
           </div>
-          <div class="flex items-center gap-2">
-            <button onclick="toggleTheme()" class="p-2.5 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl" data-theme-icon></button>
-            <button onclick="document.getElementById('addModal').classList.remove('hidden')" class="flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-medium">
+          <div class="flex items-center gap-2 shrink-0">
+            <button onclick="toggleTheme()" class="p-2.5 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition-colors" data-theme-icon title="Toggle theme"></button>
+            <button onclick="document.getElementById('addModal').classList.remove('hidden')" class="flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-medium shadow-lg shadow-indigo-600/20 transition-colors">
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
               <span class="hidden sm:inline">Add Visitor</span>
             </button>
@@ -46,13 +86,14 @@
         </div>
       </header>
 
-      <main class="p-4 lg:p-8">
+      <main class="flex-1 overflow-y-auto overflow-x-hidden">
+        <div class="p-4 lg:p-8">
         <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
           <div class="p-4 lg:p-6 border-b border-slate-100 dark:border-slate-800">
             <div class="flex flex-col lg:flex-row gap-4 lg:items-center lg:justify-between">
               <div class="flex-1 max-w-md relative">
                 <svg class="absolute left-3.5 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
-                <input id="searchVisitor" type="text" placeholder="Search by name, mobile, or ID..." class="w-full pl-11 pr-4 py-2.5 border border-slate-300 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-950 focus:ring-2 focus:ring-indigo-500">
+                <input id="searchVisitor" type="text" placeholder="Search by name, mobile, or Pass ID..." class="w-full pl-11 pr-4 py-2.5 border border-slate-300 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-950 focus:ring-2 focus:ring-indigo-500">
               </div>
               <select id="statusFilter" class="px-4 py-2.5 border border-slate-300 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-950 text-sm">
                 <option value="all">All Status</option><option value="active">Active</option><option value="completed">Completed</option>
@@ -79,6 +120,7 @@
             </div>
           </div>
         </div>
+        </div>
       </main>
     </div>
   </div>
@@ -95,9 +137,10 @@
           <div><label class="block text-sm font-medium mb-1">Mobile *</label><input name="mobile" required maxlength="10" class="w-full px-4 py-2.5 border border-slate-300 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-950"><p class="error-msg text-xs text-red-600 mt-1 hidden">Required</p></div>
         </div>
         <div><label class="block text-sm font-medium mb-1">Address *</label><input name="address" required class="w-full px-4 py-2.5 border border-slate-300 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-950"><p class="error-msg text-xs text-red-600 mt-1 hidden">Required</p></div>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div><label class="block text-sm font-medium mb-1">Purpose *</label><select name="purpose" required class="w-full px-4 py-2.5 border border-slate-300 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-950"><option value="">Select</option><option>Interview</option><option>Client Meeting</option><option>Delivery</option><option>Maintenance</option></select><p class="error-msg text-xs text-red-600 mt-1 hidden">Required</p></div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div><label class="block text-sm font-medium mb-1">Purpose *</label><select name="purpose" required class="w-full px-4 py-2.5 border border-slate-300 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-950"><option value="">Select</option><option>Interview</option><option>Client Meeting</option><option>Delivery</option><option>Maintenance</option><option>Vendor Discussion</option><option>Personal</option><option>Guest</option><option>Audit</option></select><p class="error-msg text-xs text-red-600 mt-1 hidden">Required</p></div>
           <div><label class="block text-sm font-medium mb-1">Person *</label><input name="person" required class="w-full px-4 py-2.5 border border-slate-300 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-950"><p class="error-msg text-xs text-red-600 mt-1 hidden">Required</p></div>
+          <div><label class="block text-sm font-medium mb-1">Duration *</label><select name="duration" required class="w-full px-4 py-2.5 border border-slate-300 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-950"><option value="30">30 min</option><option value="60" selected>1 hour</option><option value="120">2 hours</option><option value="240">4 hours</option><option value="480">8 hours</option></select></div>
         </div>
         <div class="flex gap-3 pt-2"><button type="submit" class="flex-1 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-medium">Check In</button><button type="button" onclick="document.getElementById('addModal').classList.add('hidden')" class="px-6 py-2.5 border border-slate-300 dark:border-slate-700 rounded-xl">Cancel</button></div>
       </form>
@@ -110,5 +153,5 @@
 
   <script src="assets/data.js"></script>
   <script src="assets/main.js"></script>
-</body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a0aff401080d3460',t:'MTc4MTM0MTczMg=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
