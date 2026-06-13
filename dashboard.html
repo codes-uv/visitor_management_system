@@ -1,23 +1,30 @@
 <!DOCTYPE html>
 <html lang="en" class="h-full">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Dashboard - VisitorHub</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  <script>tailwind.config = { darkMode: 'class', theme: { extend: { fontFamily: { sans: ['Inter','system-ui'] } } } }</script>
-  <script>const t=localStorage.getItem('dvms_theme');if(t==='dark'||(!t&&matchMedia('(prefers-color-scheme: dark)').matches))document.documentElement.classList.add('dark')</script>
+  <script>tailwind.config = { darkMode: 'class', theme: { extend: { fontFamily: { sans: ['Inter', 'system-ui'] } } } }</script>
+  <script>const t = localStorage.getItem('dvms_theme'); if (t === 'dark' || (!t && matchMedia('(prefers-color-scheme: dark)').matches)) document.documentElement.classList.add('dark')</script>
 </head>
+
 <body class="bg-slate-50 dark:bg-slate-950 font-sans text-slate-900 dark:text-slate-100 h-full overflow-hidden">
   <div class="flex h-full">
     <!-- SIDEBAR - FIXED -->
-    <aside id="sidebar" class="fixed inset-y-0 left-0 z-40 w-72 bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 transform -translate-x-full lg:translate-x-0 transition-transform duration-300 flex flex-col">
+    <aside id="sidebar"
+      class="fixed inset-y-0 left-0 z-40 w-72 bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 transform -translate-x-full lg:translate-x-0 transition-transform duration-300 flex flex-col">
       <!-- Logo - Fixed Height to match header -->
       <div class="h-[73px] flex items-center px-6 border-b border-slate-200 dark:border-slate-800 shrink-0">
         <div class="flex items-center gap-3">
-          <div class="w-10 h-10 bg-indigo-600 rounded-xl flex items-center justify-center shadow-lg shadow-indigo-600/20">
-            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+          <div
+            class="w-10 h-10 bg-indigo-600 rounded-xl flex items-center justify-center shadow-lg shadow-indigo-600/20">
+            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+            </svg>
           </div>
           <div>
             <h1 class="font-bold text-slate-900 dark:text-white leading-tight">VisitorHub</h1>
@@ -25,27 +32,47 @@
           </div>
         </div>
       </div>
-      
+
       <!-- Navigation - Scrollable -->
       <nav class="flex-1 overflow-y-auto p-4 space-y-1">
-        <a href="dashboard.html" class="flex items-center gap-3 px-3 py-2.5 rounded-xl bg-indigo-50 dark:bg-indigo-950/50 text-indigo-700 dark:text-indigo-300 font-medium">
-          <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+        <a href="dashboard.html"
+          class="flex items-center gap-3 px-3 py-2.5 rounded-xl bg-indigo-50 dark:bg-indigo-950/50 text-indigo-700 dark:text-indigo-300 font-medium">
+          <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+          </svg>
           <span>Dashboard</span>
         </a>
-        <a href="visitors.html" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
-          <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+        <a href="visitors.html"
+          class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
+          <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
+          </svg>
           <span>Visitors</span>
         </a>
-        <a href="dashboard.html#add" onclick="showSection('add'); return false;" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
-          <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+        <a href="dashboard.html#add" onclick="showSection('add'); return false;"
+          class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
+          <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
           <span>Add Visitor</span>
         </a>
-        <a href="dashboard.html#blacklist" onclick="showSection('blacklist'); return false;" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
-          <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"/></svg>
+        <a href="dashboard.html#blacklist" onclick="showSection('blacklist'); return false;"
+          class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
+          <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
+          </svg>
           <span>Blacklist</span>
         </a>
-        <a href="reports.html" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
-          <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+        <a href="reports.html"
+          class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
+          <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+          </svg>
           <span>Reports</span>
         </a>
       </nav>
@@ -53,13 +80,19 @@
       <!-- User Profile - Fixed at Bottom -->
       <div class="p-4 border-t border-slate-200 dark:border-slate-800 shrink-0 bg-white dark:bg-slate-900">
         <div class="flex items-center gap-3">
-          <img src="https://i.pravatar.cc/40?u=admin" class="w-9 h-9 rounded-full ring-2 ring-slate-200 dark:ring-slate-700">
+          <img src="https://i.pravatar.cc/40?u=admin"
+            class="w-9 h-9 rounded-full ring-2 ring-slate-200 dark:ring-slate-700">
           <div class="flex-1 min-w-0">
             <p class="text-sm font-medium truncate" data-username>admin</p>
             <p class="text-xs text-slate-500 dark:text-slate-400 truncate">Security Admin</p>
           </div>
-          <button data-logout class="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg text-slate-500 hover:text-red-600 dark:hover:text-red-400 transition-colors shrink-0" title="Logout">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+          <button data-logout
+            class="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg text-slate-500 hover:text-red-600 dark:hover:text-red-400 transition-colors shrink-0"
+            title="Logout">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+            </svg>
           </button>
         </div>
       </div>
@@ -70,21 +103,31 @@
     <!-- MAIN CONTENT - Scrollable -->
     <div class="flex-1 lg:ml-72 flex flex-col h-full">
       <!-- Header - Fixed Height -->
-      <header class="h-[73px] shrink-0 sticky top-0 z-20 bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border-b border-slate-200 dark:border-slate-800">
+      <header
+        class="h-[73px] shrink-0 sticky top-0 z-20 bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border-b border-slate-200 dark:border-slate-800">
         <div class="h-full flex items-center justify-between px-4 lg:px-8">
           <div class="flex items-center gap-3 min-w-0">
-            <button id="sidebarToggle" class="lg:hidden p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl shrink-0">
-              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+            <button id="sidebarToggle"
+              class="lg:hidden p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl shrink-0">
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+              </svg>
             </button>
             <div class="min-w-0">
               <h2 class="text-xl lg:text-2xl font-bold truncate">Dashboard</h2>
-              <p class="text-sm text-slate-500 dark:text-slate-400 hidden sm:block truncate">Welcome back, monitor your visitors</p>
+              <p class="text-sm text-slate-500 dark:text-slate-400 hidden sm:block truncate">Welcome back, monitor your
+                visitors</p>
             </div>
           </div>
           <div class="flex items-center gap-2 shrink-0">
-            <button onclick="toggleTheme()" class="p-2.5 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition-colors" data-theme-icon title="Toggle theme"></button>
-            <a href="visitors.html" class="hidden sm:flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-medium shadow-lg shadow-indigo-600/20 transition-colors">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+            <button onclick="toggleTheme()"
+              class="p-2.5 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition-colors" data-theme-icon
+              title="Toggle theme"></button>
+            <a href="visitors.html"
+              class="hidden sm:flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-medium shadow-lg shadow-indigo-600/20 transition-colors">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+              </svg>
               <span>New Visitor</span>
             </a>
           </div>
@@ -94,222 +137,297 @@
       <!-- Scrollable Content Area -->
       <main class="flex-1 overflow-y-auto overflow-x-hidden">
         <div class="p-4 lg:p-8">
-        <section id="section-dashboard">
-          <div id="statsGrid" class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 lg:gap-6 mb-8">
-            <div class="bg-white dark:bg-slate-900 rounded-2xl p-6 border border-slate-200 dark:border-slate-800 shadow-sm">
-              <div class="flex items-center justify-between mb-4">
-                <div class="w-12 h-12 bg-indigo-100 dark:bg-indigo-950 rounded-xl flex items-center justify-center">
-                  <svg class="w-6 h-6 text-indigo-600 dark:text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+          <section id="section-dashboard">
+            <div id="statsGrid" class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 lg:gap-6 mb-8">
+              <div
+                class="bg-white dark:bg-slate-900 rounded-2xl p-6 border border-slate-200 dark:border-slate-800 shadow-sm">
+                <div class="flex items-center justify-between mb-4">
+                  <div class="w-12 h-12 bg-indigo-100 dark:bg-indigo-950 rounded-xl flex items-center justify-center">
+                    <svg class="w-6 h-6 text-indigo-600 dark:text-indigo-400" fill="none" stroke="currentColor"
+                      viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
+                    </svg>
+                  </div>
+                  <span
+                    class="text-xs font-medium px-2.5 py-1 bg-indigo-50 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300 rounded-full">Today</span>
                 </div>
-                <span class="text-xs font-medium px-2.5 py-1 bg-indigo-50 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300 rounded-full">Today</span>
+                <p class="text-3xl font-bold" id="statToday">0</p>
+                <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">Total Visitors Today</p>
               </div>
-              <p class="text-3xl font-bold" id="statToday">0</p>
-              <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">Total Visitors Today</p>
+
+              <div
+                class="bg-white dark:bg-slate-900 rounded-2xl p-6 border border-slate-200 dark:border-slate-800 shadow-sm">
+                <div class="flex items-center justify-between mb-4">
+                  <div class="w-12 h-12 bg-emerald-100 dark:bg-emerald-950 rounded-xl flex items-center justify-center">
+                    <svg class="w-6 h-6 text-emerald-600 dark:text-emerald-400" fill="none" stroke="currentColor"
+                      viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                    </svg>
+                  </div>
+                  <span
+                    class="text-xs font-medium px-2.5 py-1 bg-emerald-50 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 rounded-full">Live</span>
+                </div>
+                <p class="text-3xl font-bold" id="statActive">0</p>
+                <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">Active Visitors</p>
+              </div>
+
+              <div
+                class="bg-white dark:bg-slate-900 rounded-2xl p-6 border border-slate-200 dark:border-slate-800 shadow-sm">
+                <div class="flex items-center justify-between mb-4">
+                  <div class="w-12 h-12 bg-slate-100 dark:bg-slate-800 rounded-xl flex items-center justify-center">
+                    <svg class="w-6 h-6 text-slate-600 dark:text-slate-400" fill="none" stroke="currentColor"
+                      viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+                    </svg>
+                  </div>
+                  <span
+                    class="text-xs font-medium px-2.5 py-1 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 rounded-full">Done</span>
+                </div>
+                <p class="text-3xl font-bold" id="statCompleted">0</p>
+                <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">Completed Visits</p>
+              </div>
+
+              <div
+                class="bg-white dark:bg-slate-900 rounded-2xl p-6 border border-slate-200 dark:border-slate-800 shadow-sm">
+                <div class="flex items-center justify-between mb-4">
+                  <div class="w-12 h-12 bg-red-100 dark:bg-red-950 rounded-xl flex items-center justify-center">
+                    <svg class="w-6 h-6 text-red-600 dark:text-red-400" fill="none" stroke="currentColor"
+                      viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
+                    </svg>
+                  </div>
+                  <span
+                    class="text-xs font-medium px-2.5 py-1 bg-red-50 dark:bg-red-950 text-red-700 dark:text-red-300 rounded-full">Blocked</span>
+                </div>
+                <p class="text-3xl font-bold" id="statBlacklist">0</p>
+                <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">Blacklisted</p>
+              </div>
             </div>
 
-            <div class="bg-white dark:bg-slate-900 rounded-2xl p-6 border border-slate-200 dark:border-slate-800 shadow-sm">
-              <div class="flex items-center justify-between mb-4">
-                <div class="w-12 h-12 bg-emerald-100 dark:bg-emerald-950 rounded-xl flex items-center justify-center">
-                  <svg class="w-6 h-6 text-emerald-600 dark:text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+            <div class="grid grid-cols-1 xl:grid-cols-3 gap-6">
+              <div
+                class="xl:col-span-2 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
+                <div class="p-6 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
+                  <div>
+                    <h3 class="font-semibold">Recent Visitors Today</h3>
+                    <p class="text-sm text-slate-500 dark:text-slate-400 mt-0.5">Latest check-ins</p>
+                  </div>
+                  <a href="visitors.html"
+                    class="text-sm font-medium text-indigo-600 dark:text-indigo-400 hover:underline">View all →</a>
                 </div>
-                <span class="text-xs font-medium px-2.5 py-1 bg-emerald-50 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 rounded-full">Live</span>
-              </div>
-              <p class="text-3xl font-bold" id="statActive">0</p>
-              <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">Active Visitors</p>
-            </div>
-
-            <div class="bg-white dark:bg-slate-900 rounded-2xl p-6 border border-slate-200 dark:border-slate-800 shadow-sm">
-              <div class="flex items-center justify-between mb-4">
-                <div class="w-12 h-12 bg-slate-100 dark:bg-slate-800 rounded-xl flex items-center justify-center">
-                  <svg class="w-6 h-6 text-slate-600 dark:text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg>
+                <div class="overflow-x-auto">
+                  <table class="w-full">
+                    <thead class="bg-slate-50/50 dark:bg-slate-800/50">
+                      <tr
+                        class="text-left text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+                        <th class="py-3 px-4">Visitor</th>
+                        <th class="py-3 px-4">Meeting</th>
+                        <th class="py-3 px-4">Purpose</th>
+                        <th class="py-3 px-4">Status</th>
+                        <th class="py-3 px-4">Time</th>
+                      </tr>
+                    </thead>
+                    <tbody id="recentVisitors" class="divide-y divide-slate-100 dark:divide-slate-800"></tbody>
+                  </table>
                 </div>
-                <span class="text-xs font-medium px-2.5 py-1 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 rounded-full">Done</span>
               </div>
-              <p class="text-3xl font-bold" id="statCompleted">0</p>
-              <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">Completed Visits</p>
-            </div>
 
-            <div class="bg-white dark:bg-slate-900 rounded-2xl p-6 border border-slate-200 dark:border-slate-800 shadow-sm">
-              <div class="flex items-center justify-between mb-4">
-                <div class="w-12 h-12 bg-red-100 dark:bg-red-950 rounded-xl flex items-center justify-center">
-                  <svg class="w-6 h-6 text-red-600 dark:text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"/></svg>
+              <div class="space-y-6">
+                <div
+                  class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm p-6">
+                  <h3 class="font-semibold mb-4">Quick Actions</h3>
+                  <div class="space-y-3">
+                    <button onclick="showSection('add')"
+                      class="w-full flex items-center gap-3 p-3 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-xl transition text-left">
+                      <div
+                        class="w-10 h-10 bg-indigo-100 dark:bg-indigo-950 rounded-lg flex items-center justify-center">
+                        <svg class="w-5 h-5 text-indigo-600 dark:text-indigo-400" fill="none" stroke="currentColor"
+                          viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
+                        </svg>
+                      </div>
+                      <div>
+                        <p class="font-medium">Add New Visitor</p>
+                        <p class="text-xs text-slate-500 dark:text-slate-400">Quick check-in</p>
+                      </div>
+                    </button>
+                    <a href="visitors.html"
+                      class="w-full flex items-center gap-3 p-3 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-xl transition">
+                      <div
+                        class="w-10 h-10 bg-emerald-100 dark:bg-emerald-950 rounded-lg flex items-center justify-center">
+                        <svg class="w-5 h-5 text-emerald-600 dark:text-emerald-400" fill="none" stroke="currentColor"
+                          viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                        </svg>
+                      </div>
+                      <div>
+                        <p class="font-medium">Search Visitors</p>
+                        <p class="text-xs text-slate-500 dark:text-slate-400">Find by name or mobile</p>
+                      </div>
+                    </a>
+                  </div>
                 </div>
-                <span class="text-xs font-medium px-2.5 py-1 bg-red-50 dark:bg-red-950 text-red-700 dark:text-red-300 rounded-full">Blocked</span>
               </div>
-              <p class="text-3xl font-bold" id="statBlacklist">0</p>
-              <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">Blacklisted</p>
             </div>
-          </div>
+          </section>
 
-          <div class="grid grid-cols-1 xl:grid-cols-3 gap-6">
-            <div class="xl:col-span-2 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
-              <div class="p-6 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
-                <div>
-                  <h3 class="font-semibold">Recent Visitors Today</h3>
-                  <p class="text-sm text-slate-500 dark:text-slate-400 mt-0.5">Latest check-ins</p>
+          <section id="section-add" class="hidden">
+            <div class="max-w-3xl">
+              <button onclick="showSection('dashboard')"
+                class="mb-6 flex items-center gap-2 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                </svg>
+                Back
+              </button>
+              <div
+                class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
+                <div class="p-6 border-b border-slate-100 dark:border-slate-800">
+                  <h3 class="text-xl font-semibold">Add New Visitor</h3>
+                  <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">Fill visitor details for check-in</p>
                 </div>
-                <a href="visitors.html" class="text-sm font-medium text-indigo-600 dark:text-indigo-400 hover:underline">View all →</a>
-              </div>
-              <div class="overflow-x-auto">
-                <table class="w-full">
-                  <thead class="bg-slate-50/50 dark:bg-slate-800/50">
-                    <tr class="text-left text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">
-                      <th class="py-3 px-4">Visitor</th>
-                      <th class="py-3 px-4">Meeting</th>
-                      <th class="py-3 px-4">Purpose</th>
-                      <th class="py-3 px-4">Status</th>
-                      <th class="py-3 px-4">Time</th>
-                    </tr>
-                  </thead>
-                  <tbody id="recentVisitors" class="divide-y divide-slate-100 dark:divide-slate-800"></tbody>
-                </table>
-              </div>
-            </div>
-
-            <div class="space-y-6">
-              <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm p-6">
-                <h3 class="font-semibold mb-4">Quick Actions</h3>
-                <div class="space-y-3">
-                  <button onclick="showSection('add')" class="w-full flex items-center gap-3 p-3 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-xl transition text-left">
-                    <div class="w-10 h-10 bg-indigo-100 dark:bg-indigo-950 rounded-lg flex items-center justify-center">
-                      <svg class="w-5 h-5 text-indigo-600 dark:text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"/></svg>
+                <form id="addVisitorForm" class="p-6 space-y-5">
+                  <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                    <div>
+                      <label class="block text-sm font-medium mb-1.5">Visitor Name *</label>
+                      <input name="name" required placeholder="Enter full name"
+                        class="w-full px-4 py-2.5 border border-slate-300 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-950 focus:ring-2 focus:ring-indigo-500">
+                      <p class="error-msg text-xs text-red-600 mt-1 hidden">Name is required</p>
                     </div>
                     <div>
-                      <p class="font-medium">Add New Visitor</p>
-                      <p class="text-xs text-slate-500 dark:text-slate-400">Quick check-in</p>
+                      <label class="block text-sm font-medium mb-1.5">Mobile Number *</label>
+                      <input name="mobile" required placeholder="10-digit number" maxlength="10"
+                        class="w-full px-4 py-2.5 border border-slate-300 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-950 focus:ring-2 focus:ring-indigo-500">
+                      <p class="error-msg text-xs text-red-600 mt-1 hidden">Mobile is required</p>
                     </div>
-                  </button>
-                  <a href="visitors.html" class="w-full flex items-center gap-3 p-3 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-xl transition">
-                    <div class="w-10 h-10 bg-emerald-100 dark:bg-emerald-950 rounded-lg flex items-center justify-center">
-                      <svg class="w-5 h-5 text-emerald-600 dark:text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                  </div>
+                  <div>
+                    <label class="block text-sm font-medium mb-1.5">Address *</label>
+                    <input name="address" required placeholder="Full address"
+                      class="w-full px-4 py-2.5 border border-slate-300 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-950 focus:ring-2 focus:ring-indigo-500">
+                    <p class="error-msg text-xs text-red-600 mt-1 hidden">Address is required</p>
+                  </div>
+                  <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+                    <div>
+                      <label class="block text-sm font-medium mb-1.5">Purpose *</label>
+                      <select name="purpose" required
+                        class="w-full px-4 py-2.5 border border-slate-300 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-950 focus:ring-2 focus:ring-indigo-500">
+                        <option value="">Select purpose</option>
+                        <option>Interview</option>
+                        <option>Client Meeting</option>
+                        <option>Delivery</option>
+                        <option>Maintenance</option>
+                        <option>Vendor Discussion</option>
+                        <option>Personal</option>
+                        <option>Guest</option>
+                        <option>Audit</option>
+                      </select>
+                      <p class="error-msg text-xs text-red-600 mt-1 hidden">Purpose is required</p>
                     </div>
                     <div>
-                      <p class="font-medium">Search Visitors</p>
-                      <p class="text-xs text-slate-500 dark:text-slate-400">Find by name or mobile</p>
+                      <label class="block text-sm font-medium mb-1.5">Person to Meet *</label>
+                      <input name="person" required placeholder="Host name"
+                        class="w-full px-4 py-2.5 border border-slate-300 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-950 focus:ring-2 focus:ring-indigo-500">
+                      <p class="error-msg text-xs text-red-600 mt-1 hidden">Person is required</p>
                     </div>
-                  </a>
-                </div>
+                    <div>
+                      <label class="block text-sm font-medium mb-1.5">Duration *</label>
+                      <select name="duration" required
+                        class="w-full px-4 py-2.5 border border-slate-300 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-950 focus:ring-2 focus:ring-indigo-500">
+                        <option value="30">30 minutes</option>
+                        <option value="60" selected>1 hour</option>
+                        <option value="120">2 hours</option>
+                        <option value="240">4 hours</option>
+                        <option value="480">8 hours</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div class="flex items-center gap-3 pt-4">
+                    <button type="submit"
+                      class="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-xl shadow-lg shadow-indigo-600/20">Check
+                      In</button>
+                    <button type="reset"
+                      class="px-6 py-2.5 border border-slate-300 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-xl">Clear</button>
+                  </div>
+                </form>
               </div>
             </div>
-          </div>
-        </section>
+          </section>
 
-        <section id="section-add" class="hidden">
-          <div class="max-w-3xl">
-            <button onclick="showSection('dashboard')" class="mb-6 flex items-center gap-2 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+          <section id="section-blacklist" class="hidden">
+            <button onclick="showSection('dashboard')"
+              class="mb-6 flex items-center gap-2 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+              </svg>
               Back
             </button>
-            <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
-              <div class="p-6 border-b border-slate-100 dark:border-slate-800">
-                <h3 class="text-xl font-semibold">Add New Visitor</h3>
-                <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">Fill visitor details for check-in</p>
+            <div class="grid grid-cols-1 xl:grid-cols-3 gap-6">
+              <div
+                class="xl:col-span-2 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800">
+                <div class="p-6 border-b border-slate-100 dark:border-slate-800">
+                  <h3 class="text-xl font-semibold">Blacklist Management</h3>
+                </div>
+                <div class="overflow-x-auto">
+                  <table class="w-full">
+                    <thead class="bg-slate-50/50 dark:bg-slate-800/50">
+                      <tr class="text-left text-xs font-medium text-slate-500 dark:text-slate-400 uppercase">
+                        <th class="py-3 px-4">Visitor</th>
+                        <th class="py-3 px-4">Mobile</th>
+                        <th class="py-3 px-4">Reason</th>
+                        <th class="py-3 px-4">Action</th>
+                      </tr>
+                    </thead>
+                    <tbody id="blacklistTable" class="divide-y divide-slate-100 dark:divide-slate-800"></tbody>
+                  </table>
+                </div>
               </div>
-              <form id="addVisitorForm" class="p-6 space-y-5">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-                  <div>
-                    <label class="block text-sm font-medium mb-1.5">Visitor Name *</label>
-                    <input name="name" required placeholder="Enter full name" class="w-full px-4 py-2.5 border border-slate-300 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-950 focus:ring-2 focus:ring-indigo-500">
-                    <p class="error-msg text-xs text-red-600 mt-1 hidden">Name is required</p>
-                  </div>
-                  <div>
-                    <label class="block text-sm font-medium mb-1.5">Mobile Number *</label>
-                    <input name="mobile" required placeholder="10-digit number" maxlength="10" class="w-full px-4 py-2.5 border border-slate-300 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-950 focus:ring-2 focus:ring-indigo-500">
-                    <p class="error-msg text-xs text-red-600 mt-1 hidden">Mobile is required</p>
-                  </div>
-                </div>
-                <div>
-                  <label class="block text-sm font-medium mb-1.5">Address *</label>
-                  <input name="address" required placeholder="Full address" class="w-full px-4 py-2.5 border border-slate-300 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-950 focus:ring-2 focus:ring-indigo-500">
-                  <p class="error-msg text-xs text-red-600 mt-1 hidden">Address is required</p>
-                </div>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
-                  <div>
-                    <label class="block text-sm font-medium mb-1.5">Purpose *</label>
-                    <select name="purpose" required class="w-full px-4 py-2.5 border border-slate-300 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-950 focus:ring-2 focus:ring-indigo-500">
-                      <option value="">Select purpose</option>
-                      <option>Interview</option><option>Client Meeting</option><option>Delivery</option><option>Maintenance</option><option>Vendor Discussion</option><option>Personal</option><option>Guest</option><option>Audit</option>
-                    </select>
-                    <p class="error-msg text-xs text-red-600 mt-1 hidden">Purpose is required</p>
-                  </div>
-                  <div>
-                    <label class="block text-sm font-medium mb-1.5">Person to Meet *</label>
-                    <input name="person" required placeholder="Host name" class="w-full px-4 py-2.5 border border-slate-300 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-950 focus:ring-2 focus:ring-indigo-500">
-                    <p class="error-msg text-xs text-red-600 mt-1 hidden">Person is required</p>
-                  </div>
-                  <div>
-                    <label class="block text-sm font-medium mb-1.5">Duration *</label>
-                    <select name="duration" required class="w-full px-4 py-2.5 border border-slate-300 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-950 focus:ring-2 focus:ring-indigo-500">
-                      <option value="30">30 minutes</option>
-                      <option value="60" selected>1 hour</option>
-                      <option value="120">2 hours</option>
-                      <option value="240">4 hours</option>
-                      <option value="480">8 hours</option>
-                    </select>
-                  </div>
-                </div>
-                <div class="flex items-center gap-3 pt-4">
-                  <button type="submit" class="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-xl shadow-lg shadow-indigo-600/20">Check In</button>
-                  <button type="reset" class="px-6 py-2.5 border border-slate-300 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-xl">Clear</button>
-                </div>
-              </form>
-            </div>
-          </div>
-        </section>
-
-        <section id="section-blacklist" class="hidden">
-          <button onclick="showSection('dashboard')" class="mb-6 flex items-center gap-2 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
-            Back
-          </button>
-          <div class="grid grid-cols-1 xl:grid-cols-3 gap-6">
-            <div class="xl:col-span-2 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800">
-              <div class="p-6 border-b border-slate-100 dark:border-slate-800">
-                <h3 class="text-xl font-semibold">Blacklist Management</h3>
-              </div>
-              <div class="overflow-x-auto">
-                <table class="w-full">
-                  <thead class="bg-slate-50/50 dark:bg-slate-800/50">
-                    <tr class="text-left text-xs font-medium text-slate-500 dark:text-slate-400 uppercase">
-                      <th class="py-3 px-4">Visitor</th><th class="py-3 px-4">Mobile</th><th class="py-3 px-4">Reason</th><th class="py-3 px-4">Action</th>
-                    </tr>
-                  </thead>
-                  <tbody id="blacklistTable" class="divide-y divide-slate-100 dark:divide-slate-800"></tbody>
-                </table>
+              <div
+                class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-6 h-fit">
+                <h4 class="font-semibold mb-4">Add to Blacklist</h4>
+                <form id="blacklistForm" class="space-y-4">
+                  <input name="name" required placeholder="Name"
+                    class="w-full px-3 py-2 border border-slate-300 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-950">
+                  <input name="mobile" required placeholder="Mobile"
+                    class="w-full px-3 py-2 border border-slate-300 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-950">
+                  <textarea name="reason" required rows="3" placeholder="Reason"
+                    class="w-full px-3 py-2 border border-slate-300 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-950"></textarea>
+                  <button class="w-full py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-xl font-medium">Add to
+                    Blacklist</button>
+                </form>
               </div>
             </div>
-            <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-6 h-fit">
-              <h4 class="font-semibold mb-4">Add to Blacklist</h4>
-              <form id="blacklistForm" class="space-y-4">
-                <input name="name" required placeholder="Name" class="w-full px-3 py-2 border border-slate-300 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-950">
-                <input name="mobile" required placeholder="Mobile" class="w-full px-3 py-2 border border-slate-300 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-950">
-                <textarea name="reason" required rows="3" placeholder="Reason" class="w-full px-3 py-2 border border-slate-300 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-950"></textarea>
-                <button class="w-full py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-xl font-medium">Add to Blacklist</button>
-              </form>
-            </div>
-          </div>
-        </section>
+          </section>
         </div>
       </main>
     </div>
   </div>
 
-  <div id="visitorModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-    <div class="bg-white dark:bg-slate-900 rounded-3xl max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl border border-slate-200 dark:border-slate-800">
+  <div id="visitorModal"
+    class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+    <div
+      class="bg-white dark:bg-slate-900 rounded-3xl max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl border border-slate-200 dark:border-slate-800">
       <div id="visitorModalContent" class="p-6 lg:p-8"></div>
     </div>
   </div>
 
-  <script src="assets/data.js"></script>
-  <script src="assets/main.js"></script>
+  <script src="data.js"></script>
+  <script src="main.js"></script>
   <script>
     function showSection(name) {
       document.querySelectorAll('section[id^="section-"]').forEach(s => s.classList.add('hidden'));
-      document.getElementById('section-'+name).classList.remove('hidden');
-      window.scrollTo(0,0);
+      document.getElementById('section-' + name).classList.remove('hidden');
+      window.scrollTo(0, 0);
     }
     if (location.hash === '#add') showSection('add');
     if (location.hash === '#blacklist') showSection('blacklist');
   </script>
 </body>
+
 </html>
