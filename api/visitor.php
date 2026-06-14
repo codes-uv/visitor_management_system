@@ -181,8 +181,8 @@ try {
                 throw new Exception("This phone number is blacklisted and cannot be saved.");
             }
 
-            // 2. Retrieve visitor ID
-            $stmt_find = mysqli_prepare($conn, "SELECT visitor_id FROM visits WHERE id = ?");
+            // 2. Retrieve visitor ID and checkout details
+            $stmt_find = mysqli_prepare($conn, "SELECT visitor_id, status, check_out FROM visits WHERE id = ?");
             mysqli_stmt_bind_param($stmt_find, "i", $id);
             mysqli_stmt_execute($stmt_find);
             $row = mysqli_fetch_assoc(mysqli_stmt_get_result($stmt_find));
@@ -190,17 +190,27 @@ try {
                 throw new Exception("Visit record not found.");
             }
             $visitor_id = $row['visitor_id'];
-
+            $current_status = $row['status'];
+            $current_checkout = $row['check_out'];
+ 
             // 3. Update visitors profile table
             $stmt_visitor = mysqli_prepare($conn, "UPDATE visitors SET name=?, mobile=? WHERE visitor_id=?");
             mysqli_stmt_bind_param($stmt_visitor, "sss", $name, $mobile, $visitor_id);
             if (!mysqli_stmt_execute($stmt_visitor)) {
                 throw new Exception("Failed to update visitor details.");
             }
-
-            // 4. Update visits details table
-            $stmt_visit = mysqli_prepare($conn, "UPDATE visits SET purpose=?, person_to_meet=?, expected_duration=?, status=? WHERE id=?");
-            mysqli_stmt_bind_param($stmt_visit, "ssisi", $purpose, $person, $duration, $status, $id);
+ 
+            // 4. Update visits details table (setting checkout time conditionally)
+            if ($status === 'completed' && empty($current_checkout)) {
+                $stmt_visit = mysqli_prepare($conn, "UPDATE visits SET purpose=?, person_to_meet=?, expected_duration=?, status=?, check_out=CURRENT_TIMESTAMP WHERE id=?");
+                mysqli_stmt_bind_param($stmt_visit, "ssisi", $purpose, $person, $duration, $status, $id);
+            } else if ($status === 'active' && !empty($current_checkout)) {
+                $stmt_visit = mysqli_prepare($conn, "UPDATE visits SET purpose=?, person_to_meet=?, expected_duration=?, status=?, check_out=NULL WHERE id=?");
+                mysqli_stmt_bind_param($stmt_visit, "ssisi", $purpose, $person, $duration, $status, $id);
+            } else {
+                $stmt_visit = mysqli_prepare($conn, "UPDATE visits SET purpose=?, person_to_meet=?, expected_duration=?, status=? WHERE id=?");
+                mysqli_stmt_bind_param($stmt_visit, "ssisi", $purpose, $person, $duration, $status, $id);
+            }
             if (!mysqli_stmt_execute($stmt_visit)) {
                 throw new Exception("Failed to update visit details.");
             }
