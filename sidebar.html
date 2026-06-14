@@ -12,10 +12,16 @@
       <p class="text-xs text-slate-500 dark:text-slate-400 leading-tight">Admin Panel</p>
     </div>
   </div>
-  <!-- Toggle button -->
-  <button id="sidebarCollapseBtn" class="p-1.5 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg text-slate-500 hover:text-slate-900 dark:hover:text-white transition-colors" title="Toggle Sidebar">
+  <!-- Toggle button (Desktop) -->
+  <button id="sidebarCollapseBtn" class="hidden lg:block p-1.5 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg text-slate-500 hover:text-slate-900 dark:hover:text-white transition-colors" title="Toggle Sidebar">
     <svg id="collapseIcon" class="w-5 h-5 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 19l-7-7 7-7m8 14l-7-7 7-7" />
+    </svg>
+  </button>
+  <!-- Close button (Mobile) -->
+  <button id="sidebarCloseBtn" class="lg:hidden p-1.5 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg text-slate-500 hover:text-slate-900 dark:hover:text-white transition-colors" title="Close Sidebar">
+    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
     </svg>
   </button>
 </div>

@@ -271,18 +271,18 @@ async function initSidebar() {
       localStorage.setItem('dvms_sidebar_collapsed', collapsing);
 
       if (collapsing) {
-        sidebar.classList.remove('w-72');
+        sidebar.classList.remove('w-64');
         sidebar.classList.add('w-20');
         if (mainContent) {
-          mainContent.classList.remove('lg:ml-72');
+          mainContent.classList.remove('lg:ml-64');
           mainContent.classList.add('lg:ml-20');
         }
       } else {
         sidebar.classList.remove('w-20');
-        sidebar.classList.add('w-72');
+        sidebar.classList.add('w-64');
         if (mainContent) {
           mainContent.classList.remove('lg:ml-20');
-          mainContent.classList.add('lg:ml-72');
+          mainContent.classList.add('lg:ml-64');
         }
       }
     });
@@ -290,12 +290,16 @@ async function initSidebar() {
     // 6. Bind Mobile responsive controls
     const sidebarOverlay = document.getElementById('sidebarOverlay');
     document.getElementById('sidebarToggle')?.addEventListener('click', () => {
-      sidebar.classList.toggle('-translate-x-full');
-      sidebarOverlay?.classList.toggle('hidden');
+      sidebar.classList.remove('-translate-x-full');
+      sidebarOverlay?.classList.remove('hidden');
     });
     sidebarOverlay?.addEventListener('click', () => {
       sidebar.classList.add('-translate-x-full');
       sidebarOverlay.classList.add('hidden');
+    });
+    sidebar.querySelector('#sidebarCloseBtn')?.addEventListener('click', () => {
+      sidebar.classList.add('-translate-x-full');
+      sidebarOverlay?.classList.add('hidden');
     });
 
   } catch (err) {
@@ -319,12 +323,13 @@ document.addEventListener('DOMContentLoaded', () => {
   // 2.2 Instant Sidebar Collapse Restoration (avoids layout shift)
   const sidebar = document.getElementById('sidebar');
   const mainContent = document.getElementById('mainContent');
-  if (sidebar && localStorage.getItem('dvms_sidebar_collapsed') === 'true') {
+  const isDesktop = window.innerWidth >= 1024;
+  if (isDesktop && sidebar && localStorage.getItem('dvms_sidebar_collapsed') === 'true') {
     sidebar.classList.add('collapsed');
-    sidebar.classList.remove('w-72');
+    sidebar.classList.remove('w-64');
     sidebar.classList.add('w-20');
     if (mainContent) {
-      mainContent.classList.remove('lg:ml-72');
+      mainContent.classList.remove('lg:ml-64');
       mainContent.classList.add('lg:ml-20');
     }
   }
@@ -410,6 +415,37 @@ document.addEventListener('DOMContentLoaded', () => {
   // Add Visitor Check-in Form API Integration
   const addForm = document.getElementById('addVisitorForm');
   if (addForm) {
+    // Limit to 10 digits and numbers only, check blacklist
+    const addMobileInput = addForm.querySelector('[name="mobile"]');
+    if (addMobileInput) {
+      addMobileInput.addEventListener('input', async (e) => {
+        e.target.value = e.target.value.replace(/\D/g, '').slice(0, 10);
+        const mobile = e.target.value;
+        const warningEl = document.getElementById('blacklistWarning');
+        const reasonEl = document.getElementById('blacklistWarningReason');
+
+        if (mobile.length === 10) {
+          try {
+            const res = await fetch('api/blacklist.php');
+            const data = await res.json();
+            if (data.status === 'success') {
+              const match = data.data.find(v => String(v.mobile) === String(mobile));
+              if (match) {
+                if (reasonEl) reasonEl.textContent = match.reason;
+                warningEl?.classList.remove('hidden');
+              } else {
+                warningEl?.classList.add('hidden');
+              }
+            }
+          } catch (err) {
+            console.error(err);
+          }
+        } else {
+          warningEl?.classList.add('hidden');
+        }
+      });
+    }
+
     addForm.addEventListener('submit', async (e) => {
       e.preventDefault();
       const fd = new FormData(addForm);
@@ -487,27 +523,27 @@ document.addEventListener('DOMContentLoaded', () => {
 
         return `
           <tr class="border-b border-slate-100 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800/50">
-            <td class="py-3 px-4 lg:px-6">
+            <td class="py-3 px-4">
               <p class="font-medium text-slate-800 dark:text-slate-200">${v.name}</p>
             </td>
-            <td class="py-3 px-4">
+            <td class="py-3 px-2">
               <span class="text-xs font-mono px-2 py-1 bg-indigo-50 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300 rounded">${v.visitor_id}</span>
             </td>
-            <td class="py-3 px-4 text-sm text-slate-600 dark:text-slate-400">${v.mobile}</td>
-            <td class="py-3 px-4 text-sm hidden md:table-cell">
+            <td class="py-3 px-2 text-sm text-slate-600 dark:text-slate-400">${v.mobile}</td>
+            <td class="py-3 px-2 text-sm hidden lg:table-cell">
               <span class="px-2 py-1 rounded-lg text-xs bg-slate-100 dark:bg-slate-800">${v.purpose}</span>
             </td>
-            <td class="py-3 px-4 text-sm hidden lg:table-cell">${v.person_to_meet}</td>
-            <td class="py-3 px-4 text-sm">
+            <td class="py-3 px-2 text-sm hidden xl:table-cell">${v.person_to_meet}</td>
+            <td class="py-3 px-2 text-sm">
               <div>
                 <p class="font-medium text-slate-700 dark:text-slate-300">${checkInTime}</p>
                 <p class="text-xs text-slate-500">${formatDuration(duration)}</p>
               </div>
             </td>
-            <td class="py-3 px-4 text-sm">
+            <td class="py-3 px-2 text-sm">
               ${v.check_out ? `<p class="font-medium text-emerald-600 dark:text-emerald-400">${checkOutTime}</p>` : `<p class="text-slate-400">—</p>`}
             </td>
-            <td class="py-3 px-4">
+            <td class="py-3 px-2">
               <div class="flex flex-col gap-1">
                 <span class="px-2.5 py-1 rounded-full text-xs font-medium w-fit ${v.status === 'active' ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300' : 'bg-slate-200 text-slate-700 dark:bg-slate-700 dark:text-slate-300'}">
                   ${v.status}
@@ -515,7 +551,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 ${overstay > 0 ? `<span class="px-2 py-0.5 rounded text-[10px] font-medium bg-red-100 text-red-700 dark:bg-red-950 dark:text-red-300 w-fit">OVERSTAY +${formatDuration(overstay)}</span>` : ''}
               </div>
             </td>
-            <td class="py-3 px-4 lg:px-6">
+            <td class="py-3 px-4">
               <div class="flex items-center justify-end gap-1">
                 <button data-view="${v.visit_id}" class="p-1.5 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg text-slate-600 dark:text-slate-400" title="View History">
                   <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
@@ -712,7 +748,7 @@ document.addEventListener('DOMContentLoaded', () => {
           </div>
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div><label class="text-sm font-medium">Name *</label><input name="name" value="${v.name}" required class="mt-1 w-full px-3 py-2 border border-slate-300 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-950"></div>
-            <div><label class="text-sm font-medium">Mobile *</label><input name="mobile" value="${v.mobile}" required class="mt-1 w-full px-3 py-2 border border-slate-300 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-950"></div>
+            <div><label class="text-sm font-medium">Mobile *</label><input name="mobile" value="${v.mobile}" required maxlength="10" class="mt-1 w-full px-3 py-2 border border-slate-300 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-950"></div>
           </div>
           <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div><label class="text-sm font-medium">Purpose</label><select name="purpose" class="mt-1 w-full px-3 py-2 border border-slate-300 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-950"><option ${v.purpose === 'Interview' ? 'selected' : ''}>Interview</option><option ${v.purpose === 'Client Meeting' ? 'selected' : ''}>Client Meeting</option><option ${v.purpose === 'Delivery' ? 'selected' : ''}>Delivery</option><option ${v.purpose === 'Maintenance' ? 'selected' : ''}>Maintenance</option><option ${v.purpose === 'Vendor Discussion' ? 'selected' : ''}>Vendor Discussion</option><option ${v.purpose === 'Personal' ? 'selected' : ''}>Personal</option><option ${v.purpose === 'Guest' ? 'selected' : ''}>Guest</option><option ${v.purpose === 'Audit' ? 'selected' : ''}>Audit</option></select></div>
@@ -732,6 +768,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const editForm = document.getElementById('editForm');
     if (editForm) {
+      // Limit to 10 digits and numbers only
+      const editMobile = editForm.querySelector('[name="mobile"]');
+      if (editMobile) {
+        editMobile.addEventListener('input', (e) => {
+          e.target.value = e.target.value.replace(/\D/g, '').slice(0, 10);
+        });
+      }
+
       editForm.addEventListener('submit', async (e) => {
         e.preventDefault();
 

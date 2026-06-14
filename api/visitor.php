@@ -109,6 +109,21 @@ try {
                 throw new Exception("Visitor is blacklisted and cannot check in!");
             }
 
+            // 1.2 Verify visitor does not already have an active check-in
+            $active_stmt = mysqli_prepare($conn, "
+                SELECT vi.id 
+                FROM visits vi 
+                JOIN visitors v ON vi.visitor_id = v.visitor_id 
+                WHERE v.mobile = ? AND vi.status = 'active'
+            ");
+            if (!$active_stmt) throw new Exception("Database query build failed.");
+            mysqli_stmt_bind_param($active_stmt, "s", $mobile);
+            mysqli_stmt_execute($active_stmt);
+            $active_res = mysqli_stmt_get_result($active_stmt);
+            if (mysqli_num_rows($active_res) > 0) {
+                throw new Exception("This visitor is already checked in and has an active visit! Please check out first.");
+            }
+
             // 2. Get existing visitor_id or create a new Pass ID
             $stmt = mysqli_prepare($conn, "SELECT visitor_id FROM visitors WHERE mobile = ?");
             mysqli_stmt_bind_param($stmt, "s", $mobile);

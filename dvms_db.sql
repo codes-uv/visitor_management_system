@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Jun 14, 2026 at 08:18 AM
+-- Generation Time: Jun 14, 2026 at 04:34 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -70,14 +70,6 @@ CREATE TABLE `visitors` (
   `created_at` datetime DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- Dumping data for table `visitors`
---
-
-INSERT INTO `visitors` (`id`, `visitor_id`, `name`, `mobile`, `address`, `created_at`) VALUES
-(2, 'VIS2026001', 'john doe', '7788777777', 'nyc', '2026-06-13 17:12:37'),
-(3, 'VIS2026002', 'john doe', '9656565656', 'nyc', '2026-06-14 05:45:08');
-
 -- --------------------------------------------------------
 
 --
@@ -94,13 +86,6 @@ CREATE TABLE `visits` (
   `check_out` datetime DEFAULT NULL,
   `status` enum('active','completed') DEFAULT 'active'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `visits`
---
-
-INSERT INTO `visits` (`id`, `visitor_id`, `purpose`, `person_to_meet`, `expected_duration`, `check_in`, `check_out`, `status`) VALUES
-(7, 'VIS2026002', 'Maintenance', 'chairman', 240, '2026-06-14 05:45:08', NULL, 'active');
 
 --
 -- Indexes for dumped tables
@@ -142,7 +127,7 @@ ALTER TABLE `visits`
 -- AUTO_INCREMENT for table `blacklist`
 --
 ALTER TABLE `blacklist`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23;
 
 --
 -- AUTO_INCREMENT for table `users`
@@ -154,13 +139,13 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `visitors`
 --
 ALTER TABLE `visitors`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
 
 --
 -- AUTO_INCREMENT for table `visits`
 --
 ALTER TABLE `visits`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=27;
 
 --
 -- Constraints for dumped tables
