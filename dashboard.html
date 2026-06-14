@@ -15,86 +15,15 @@
   <div class="flex h-full">
     <!-- SIDEBAR - FIXED -->
     <aside id="sidebar"
-      class="fixed inset-y-0 left-0 z-40 w-72 bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 transform -translate-x-full lg:translate-x-0 transition-transform duration-300 flex flex-col">
-      <!-- Logo - Fixed Height to match header -->
-      <div class="h-[73px] flex items-center px-6 border-b border-slate-200 dark:border-slate-800 shrink-0">
-        <div class="flex items-center gap-3">
-          <div
-            class="w-10 h-10 bg-indigo-600 rounded-xl flex items-center justify-center shadow-lg shadow-indigo-600/20">
-            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
-            </svg>
-          </div>
-          <div>
-            <h1 class="font-bold text-slate-900 dark:text-white leading-tight">VisitorHub</h1>
-            <p class="text-xs text-slate-500 dark:text-slate-400 leading-tight">Admin Panel</p>
-          </div>
-        </div>
-      </div>
-
-      <!-- Navigation - Scrollable -->
-      <nav class="flex-1 overflow-y-auto p-4 space-y-1">
-        <a href="dashboard.html"
-          class="flex items-center gap-3 px-3 py-2.5 rounded-xl bg-indigo-50 dark:bg-indigo-950/50 text-indigo-700 dark:text-indigo-300 font-medium">
-          <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-              d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-          </svg>
-          <span>Dashboard</span>
-        </a>
-        <a href="visitors.html"
-          class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
-          <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-              d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
-          </svg>
-          <span>Visitors</span>
-        </a>
-        <a href="dashboard.html#blacklist" onclick="showSection('blacklist'); return false;"
-          class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
-          <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-              d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
-          </svg>
-          <span>Blacklist</span>
-        </a>
-        <a href="reports.html"
-          class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
-          <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-              d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-          </svg>
-          <span>Reports</span>
-        </a>
-      </nav>
-
-      <!-- User Profile - Fixed at Bottom -->
-      <div class="p-4 border-t border-slate-200 dark:border-slate-800 shrink-0 bg-white dark:bg-slate-900">
-        <div class="flex items-center gap-3">
-          <div class="flex-1 min-w-0">
-            <p class="text-sm font-medium truncate" data-username>admin</p>
-            <p class="text-xs text-slate-500 dark:text-slate-400 truncate">Security Admin</p>
-          </div>
-          <button data-logout
-            class="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg text-slate-500 hover:text-red-600 dark:hover:text-red-400 transition-colors shrink-0"
-            title="Logout">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-            </svg>
-          </button>
-        </div>
-      </div>
-    </aside>
+      class="fixed inset-y-0 left-0 z-40 w-72 bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 transform -translate-x-full lg:translate-x-0 transition-all duration-300 flex flex-col"></aside>
 
     <div id="sidebarOverlay" class="fixed inset-0 bg-black/50 z-30 hidden lg:hidden"></div>
 
     <!-- MAIN CONTENT - Scrollable -->
-    <div class="flex-1 lg:ml-72 flex flex-col h-full">
-      <!-- Header - Fixed Height -->
+    <div id="mainContent" class="flex-1 lg:ml-72 flex flex-col h-full min-w-0 transition-all duration-300">
+      <!-- 2.0 TOP HEADER BLOCK -->
       <header
-        class="h-[73px] shrink-0 sticky top-0 z-20 bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border-b border-slate-200 dark:border-slate-800">
+        class="h-[88px] shrink-0 sticky top-0 z-20 bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border-b border-slate-200 dark:border-slate-800">
         <div class="h-full flex items-center justify-between px-4 lg:px-8">
           <div class="flex items-center gap-3 min-w-0">
             <button id="sidebarToggle"
@@ -127,7 +56,9 @@
       <!-- Scrollable Content Area -->
       <main class="flex-1 overflow-y-auto overflow-x-hidden">
         <div class="p-4 lg:p-8">
+          <!-- 3.0 MAIN DASHBOARD VIEW -->
           <section id="section-dashboard">
+            <!-- 3.1 STATS GRID (Today, Active, Completed, Blocked counters) -->
             <div id="statsGrid" class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 lg:gap-6 mb-8">
               <div
                 class="bg-white dark:bg-slate-900 rounded-2xl p-6 border border-slate-200 dark:border-slate-800 shadow-sm">
@@ -198,7 +129,9 @@
               </div>
             </div>
 
+            <!-- 3.2 DETAILED CONTENT GRID (Recent Visitors Table & Quick Actions) -->
             <div class="grid grid-cols-1 xl:grid-cols-3 gap-6">
+              <!-- 3.2.1 RECENT VISITORS LIST -->
               <div
                 class="xl:col-span-2 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
                 <div class="p-6 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
@@ -269,50 +202,7 @@
             </div>
           </section>
 
-          <section id="section-blacklist" class="hidden">
-            <button onclick="showSection('dashboard')"
-              class="mb-6 flex items-center gap-2 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
-              </svg>
-              Back
-            </button>
-            <div class="grid grid-cols-1 xl:grid-cols-3 gap-6">
-              <div
-                class="xl:col-span-2 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800">
-                <div class="p-6 border-b border-slate-100 dark:border-slate-800">
-                  <h3 class="text-xl font-semibold">Blacklist Management</h3>
-                </div>
-                <div class="overflow-x-auto">
-                  <table class="w-full">
-                    <thead class="bg-slate-50/50 dark:bg-slate-800/50">
-                      <tr class="text-left text-xs font-medium text-slate-500 dark:text-slate-400 uppercase">
-                        <th class="py-3 px-4">Visitor</th>
-                        <th class="py-3 px-4">Mobile</th>
-                        <th class="py-3 px-4">Reason</th>
-                        <th class="py-3 px-4">Action</th>
-                      </tr>
-                    </thead>
-                    <tbody id="blacklistTable" class="divide-y divide-slate-100 dark:divide-slate-800"></tbody>
-                  </table>
-                </div>
-              </div>
-              <div
-                class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-6 h-fit">
-                <h4 class="font-semibold mb-4">Add to Blacklist</h4>
-                <form id="blacklistForm" class="space-y-4">
-                  <input name="name" required placeholder="Name"
-                    class="w-full px-3 py-2 border border-slate-300 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-950">
-                  <input name="mobile" required placeholder="Mobile"
-                    class="w-full px-3 py-2 border border-slate-300 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-950">
-                  <textarea name="reason" required rows="3" placeholder="Reason"
-                    class="w-full px-3 py-2 border border-slate-300 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-950"></textarea>
-                  <button class="w-full py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-xl font-medium">Add to
-                    Blacklist</button>
-                </form>
-              </div>
-            </div>
-          </section>
+
         </div>
       </main>
     </div>
@@ -328,60 +218,7 @@
 
 
   <script src="main.js"></script>
-  <!-- <script>
-    function showSection(name) {
-      document.querySelectorAll('section[id^="section-"]').forEach(s => s.classList.add('hidden'));
-      document.getElementById('section-' + name).classList.remove('hidden');
-      window.scrollTo(0, 0);
-    }
-    if (location.hash === '#blacklist') showSection('blacklist');
-  </script> -->
 
-  <!-- new function for showSection -->
-  <script>
-    function showSection(name) {
-      // 1. Hide all sections and show the target one
-      document.querySelectorAll('section[id^="section-"]').forEach(s => {
-        s.classList.add('hidden');
-      });
-
-      const targetSection = document.getElementById('section-' + name);
-      if (targetSection) {
-        targetSection.classList.remove('hidden');
-      }
-
-      // 2. Bulletproof Sidebar Highlights
-      // Select ALL links/buttons in the sidebar so nothing escapes the color reset
-      const navLinks = document.querySelectorAll('#sidebar a, #sidebar button');
-
-      navLinks.forEach(link => {
-        const onclickAttr = link.getAttribute('onclick') || '';
-
-        // Safety check: Only modify links that are actually navigation items 
-        // (ignoring logos or standard buttons that don't have our padding classes)
-        if (link.classList.contains('px-4') || onclickAttr.includes('showSection')) {
-
-          // Is this the link we just clicked?
-          if (onclickAttr.includes(`('${name}')`) || onclickAttr.includes(`("${name}")`)) {
-            // YES: Apply Active styling (Blue/Indigo)
-            link.classList.add('bg-indigo-50', 'text-indigo-600', 'dark:bg-indigo-900/50', 'dark:text-indigo-400');
-            link.classList.remove('text-slate-600', 'hover:bg-slate-100', 'dark:text-slate-400', 'dark:hover:bg-slate-800');
-          } else {
-            // NO: Apply Inactive styling (Slate/Gray)
-            // Crucial Step: Forcibly remove active classes here so the hardcoded Dashboard clears out!
-            link.classList.remove('bg-indigo-50', 'text-indigo-600', 'dark:bg-indigo-900/50', 'dark:text-indigo-400');
-            link.classList.add('text-slate-600', 'hover:bg-slate-100', 'dark:text-slate-400', 'dark:hover:bg-slate-800');
-          }
-        }
-      });
-
-      // 3. Automatically close the sidebar on mobile devices
-      const sidebar = document.getElementById('sidebar');
-      if (window.innerWidth < 1024 && sidebar && !sidebar.classList.contains('-translate-x-full')) {
-        sidebar.classList.add('-translate-x-full');
-      }
-    }
-  </script>
 
 
 </body>

@@ -9,10 +9,11 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <script>
+    // Configure Tailwind's dark mode and font settings
     tailwind.config = { darkMode: 'class', theme: { extend: { fontFamily: { sans: ['Inter', 'system-ui'] } } } }
   </script>
   <script>
-    // Prevent flash
+    // Theme setup: Reads saved preference from localStorage to prevent screen flash during load
     const t = localStorage.getItem('dvms_theme');
     if (t === 'dark' || (!t && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
       document.documentElement.classList.add('dark');
@@ -20,19 +21,22 @@
   </script>
 </head>
 
-<body
-  class="min-h-screen bg-gradient-to-br from-slate-50 to-indigo-50 dark:from-slate-950 dark:to-slate-900 font-sans flex items-center justify-center p-4 transition-colors">
+<body class="min-h-screen bg-gradient-to-br from-slate-50 to-indigo-50 dark:from-slate-950 dark:to-slate-900 font-sans flex items-center justify-center p-4 transition-colors">
+  
+  <!-- Floating Dark Mode Toggle Button -->
   <button onclick="toggleTheme()"
     class="fixed top-4 right-4 p-2.5 bg-white/80 dark:bg-slate-800/80 backdrop-blur-xl border border-slate-200 dark:border-slate-700 rounded-xl hover:bg-white dark:hover:bg-slate-800 transition z-50"
     data-theme-icon>
   </button>
 
+  <!-- Login Container Box -->
   <div class="w-full max-w-6xl grid lg:grid-cols-2 gap-8 items-center">
+    
+    <!-- Left Column: Branding / Information Panel (Visible only on Large Screens) -->
     <div class="hidden lg:block">
       <div class="max-w-md">
         <div class="flex items-center gap-3 mb-8">
-          <div
-            class="w-12 h-12 bg-indigo-600 rounded-2xl flex items-center justify-center shadow-lg shadow-indigo-600/20">
+          <div class="w-12 h-12 bg-indigo-600 rounded-2xl flex items-center justify-center shadow-lg shadow-indigo-600/20">
             <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                 d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
@@ -43,21 +47,20 @@
             <p class="text-sm text-slate-500 dark:text-slate-400">Digital Visitor Management</p>
           </div>
         </div>
-        <h2 class="text-4xl font-bold text-slate-900 dark:text-white leading-tight mb-4">Secure, Smart Visitor Check-ins
-        </h2>
-        <p class="text-lg text-slate-600 dark:text-slate-300 mb-8">Track visitors, manage blacklists, generate reports —
-          all in one clean dashboard.</p>
+        <h2 class="text-4xl font-bold text-slate-900 dark:text-white leading-tight mb-4">Secure, Smart Visitor Check-ins</h2>
+        <p class="text-lg text-slate-600 dark:text-slate-300 mb-8">Track visitors, manage blacklists, generate reports — all in one clean dashboard.</p>
       </div>
     </div>
 
+    <!-- Right Column: Login Card Form -->
     <div class="w-full max-w-md mx-auto lg:ml-auto">
-      <div
-        class="bg-white dark:bg-slate-800 rounded-3xl shadow-xl shadow-slate-200/50 dark:shadow-black/30 p-8 md:p-10 border border-slate-100 dark:border-slate-700">
+      <div class="bg-white dark:bg-slate-800 rounded-3xl shadow-xl shadow-slate-200/50 dark:shadow-black/30 p-8 md:p-10 border border-slate-100 dark:border-slate-700">
         <div class="mb-8">
           <h2 class="text-2xl font-bold text-slate-900 dark:text-white">Welcome back</h2>
           <p class="text-slate-500 dark:text-slate-400 mt-1">Sign in to your admin account</p>
         </div>
 
+        <!-- HTML Form submitting to AJAX backend via handleLogin() inside main.js -->
         <form onsubmit="handleLogin(event)" class="space-y-5">
           <div>
             <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Username</label>
@@ -84,6 +87,8 @@
               </div>
               <input id="password" name="password" type="password" required value="admin123"
                 class="w-full pl-11 pr-11 py-3 border border-slate-300 dark:border-slate-600 rounded-xl bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500">
+              
+              <!-- Toggle Password Eye Buttons -->
               <button type="button" onclick="togglePassword()"
                 class="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300">
                 <svg id="eyeOpen" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -115,9 +120,11 @@
     </div>
   </div>
 
-
   <script src="main.js"></script>
   <script>
+    /**
+     * Toggles visibility of password input
+     */
     function togglePassword() {
       const input = document.getElementById('password');
       const eyeOpen = document.getElementById('eyeOpen');
@@ -126,11 +133,19 @@
       eyeOpen.classList.toggle('hidden');
       eyeClosed.classList.toggle('hidden');
     }
+
+    /**
+     * Toggles dark mode styling classes and saves choice in localStorage
+     */
     function toggleTheme() {
       document.documentElement.classList.toggle('dark');
       localStorage.setItem('dvms_theme', document.documentElement.classList.contains('dark') ? 'dark' : 'light');
       updateIcon();
     }
+
+    /**
+     * Updates theme toggle button svg icon depending on dark/light status
+     */
     function updateIcon() {
       const btn = document.querySelector('[data-theme-icon]');
       const isDark = document.documentElement.classList.contains('dark');

@@ -1,10 +1,27 @@
-// Main JS for DVMS v3 - Integrated with PHP Backend
+/**
+ * Digital Visitor Management System (DVMS) - Core Script
+ * 
+ * This file handles frontend UI routing, theme management (dark/light mode),
+ * DOM updates, AJAX communication with the PHP backend, and data presentation.
+ * 
+ * It runs primarily after the DOMContentLoaded event triggers.
+ */
+
+// ==========================================
+// 1. THEME LOADER (Self-Executing IIFE)
+// ==========================================
 (function () {
+  // Check localStorage for a saved theme preference, falling back to system preferences
   const saved = localStorage.getItem('dvms_theme');
   const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-  if (saved === 'dark' || (!saved && prefersDark)) document.documentElement.classList.add('dark');
+  if (saved === 'dark' || (!saved && prefersDark)) {
+    document.documentElement.classList.add('dark');
+  }
 })();
 
+/**
+ * Toggles the dark/light mode class on the <html> tag and saves preference.
+ */
 function toggleTheme() {
   const isDark = document.documentElement.classList.toggle('dark');
   localStorage.setItem('dvms_theme', isDark ? 'dark' : 'light');
@@ -12,6 +29,9 @@ function toggleTheme() {
 }
 window.toggleTheme = toggleTheme;
 
+/**
+ * Updates all DOM elements that contain a theme toggle icon.
+ */
 function updateThemeIcons() {
   const isDark = document.documentElement.classList.contains('dark');
   document.querySelectorAll('[data-theme-icon]').forEach(icon => {
@@ -21,6 +41,12 @@ function updateThemeIcons() {
   });
 }
 
+/**
+ * Helper to format raw minutes into a reader-friendly duration (e.g. 90m -> 1h 30m).
+ * 
+ * @param {number} minutes 
+ * @returns {string} Formatted duration string
+ */
 function formatDuration(minutes) {
   if (minutes < 0) return '0m';
   if (minutes < 60) return `${minutes}m`;
@@ -94,37 +120,217 @@ function showConfirm(title, message, details, onConfirm, type = 'warning') {
   };
 }
 
-// Global data array to hold fetched API results for Modals
+// CUSTOM BLACKLIST PROMPT DIALOG
+function showBlacklistPrompt(name, mobile, onConfirm) {
+  const modal = document.createElement('div');
+  modal.className = 'fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm';
+  modal.innerHTML = `
+      <div class="bg-white dark:bg-slate-900 rounded-3xl shadow-2xl max-w-md w-full border border-slate-200 dark:border-slate-800 transform scale-95 opacity-0 transition-all duration-200" id="blacklistPromptBox">
+        <div class="p-6">
+          <div class="w-12 h-12 rounded-2xl bg-red-100 dark:bg-red-950 flex items-center justify-center mb-4">
+            <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"/></svg>
+          </div>
+          <h3 class="text-xl font-bold mb-2 text-slate-900 dark:text-white">Blacklist Visitor?</h3>
+          <p class="text-slate-600 dark:text-slate-400 mb-4">You are about to blacklist <strong class="text-slate-800 dark:text-slate-200">${name}</strong> (${mobile}). Please enter a reason:</p>
+          <textarea id="blacklistReasonInput" placeholder="Reason for blacklisting" class="w-full px-4 py-2.5 border border-slate-300 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-950 mb-5 focus:ring-2 focus:ring-red-500 focus:border-red-500 outline-none" rows="3"></textarea>
+          <div class="flex gap-3">
+            <button id="blacklistCancel" class="flex-1 py-2.5 border border-slate-300 dark:border-slate-700 rounded-xl font-medium hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">Cancel</button>
+            <button id="blacklistOk" class="flex-1 py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-xl font-medium shadow-lg shadow-red-600/20 transition-colors">Blacklist</button>
+          </div>
+        </div>
+      </div>
+    `;
+  document.body.appendChild(modal);
+  setTimeout(() => document.getElementById('blacklistPromptBox').classList.remove('scale-95', 'opacity-0'), 10);
+
+  modal.querySelector('#blacklistCancel').onclick = () => {
+    document.getElementById('blacklistPromptBox').classList.add('scale-95', 'opacity-0');
+    setTimeout(() => modal.remove(), 200);
+  };
+  modal.querySelector('#blacklistOk').onclick = () => {
+    const reason = document.getElementById('blacklistReasonInput').value.trim();
+    if (!reason) {
+      showToast('Reason is required', 'error');
+      return;
+    }
+    document.getElementById('blacklistPromptBox').classList.add('scale-95', 'opacity-0');
+    setTimeout(() => { modal.remove(); onConfirm(reason); }, 200);
+  };
+}
+window.showBlacklistPrompt = showBlacklistPrompt;
+
+// Global cache variable to store fetched visitor details (used dynamically for modals and actions)
 let globalVisitorsData = [];
 
+// ==========================================
+// 1.3 SIDEBAR DYNAMIC LOADER & COLLAPSE CONTROLLER
+// ==========================================
+/**
+ * Asynchronously loads the external sidebar.html template, restores the collapse
+ * state from localStorage, dynamically highlights the active navigation item, and
+ * binds event listeners for responsiveness, logout, and collapse toggling.
+ */
+async function initSidebar() {
+  const sidebar = document.getElementById('sidebar');
+  if (!sidebar) return;
+
+  try {
+    const response = await fetch('sidebar.html');
+    if (!response.ok) throw new Error('Failed to load sidebar template');
+    const html = await response.text();
+    sidebar.innerHTML = html;
+
+    // 1. Inject Styles dynamically once to control transitions and tooltip states
+    if (!document.getElementById('sidebar-dynamic-styles')) {
+      const style = document.createElement('style');
+      style.id = 'sidebar-dynamic-styles';
+      style.textContent = `
+        @media (min-width: 1024px) {
+          #sidebar {
+            transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+          }
+          #sidebar.collapsed {
+            width: 5rem !important; /* w-20 */
+            overflow-x: hidden !important;
+          }
+          #sidebar.collapsed nav {
+            overflow-x: hidden !important;
+          }
+          #sidebar.collapsed .sidebar-text {
+            display: none !important;
+          }
+          #sidebar.collapsed > div:first-child > div:first-child {
+            display: none !important;
+          }
+          #sidebar.collapsed > div:first-child {
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 0.5rem;
+            padding-left: 0;
+            padding-right: 0;
+          }
+          #sidebar.collapsed nav a {
+            justify-content: center;
+            padding-left: 0;
+            padding-right: 0;
+          }
+          #sidebar.collapsed > div:last-child > div {
+            flex-direction: column;
+            align-items: center;
+            gap: 0.75rem;
+          }
+          #sidebar.collapsed > div:last-child {
+            padding-left: 0;
+            padding-right: 0;
+          }
+          #sidebar.collapsed #collapseIcon {
+            transform: rotate(180deg);
+          }
+          #sidebar:not(.collapsed) .sidebar-tooltip {
+            display: none !important;
+          }
+        }
+      `;
+      document.head.appendChild(style);
+    }
+
+    // 2. Set active navigation link styling
+    const path = window.location.pathname;
+    const navLinks = sidebar.querySelectorAll('[data-nav-link]');
+    navLinks.forEach(link => {
+      const key = link.getAttribute('data-nav-link');
+      const isActive = path.includes(`${key}.html`) || (key === 'dashboard' && (path.endsWith('/') || path.includes('index.html')));
+      if (isActive) {
+        link.className = "flex items-center gap-3 px-3 py-2.5 rounded-xl bg-indigo-50 dark:bg-indigo-950/50 text-indigo-700 dark:text-indigo-300 font-medium group relative transition-all duration-200";
+      } else {
+        link.className = "flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors group relative";
+      }
+    });
+
+    // 3. Set profile info and user avatar initials
+    const user = localStorage.getItem('dvms_user') || 'Admin';
+    sidebar.querySelectorAll('[data-username]').forEach(el => el.textContent = user);
+    const initials = user.slice(0, 2).toUpperCase();
+    sidebar.querySelectorAll('[data-user-avatar]').forEach(el => el.textContent = initials);
+
+    // 4. Bind Logout Button
+    sidebar.querySelectorAll('[data-logout]').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        await fetch('api/logout.php');
+        localStorage.removeItem('dvms_user');
+        window.location.href = 'login.html';
+      });
+    });
+
+    // 5. Bind Collapse Toggle Button
+    const collapseBtn = sidebar.querySelector('#sidebarCollapseBtn');
+    collapseBtn?.addEventListener('click', () => {
+      const mainContent = document.getElementById('mainContent');
+      const collapsing = sidebar.classList.toggle('collapsed');
+      localStorage.setItem('dvms_sidebar_collapsed', collapsing);
+
+      if (collapsing) {
+        sidebar.classList.remove('w-72');
+        sidebar.classList.add('w-20');
+        if (mainContent) {
+          mainContent.classList.remove('lg:ml-72');
+          mainContent.classList.add('lg:ml-20');
+        }
+      } else {
+        sidebar.classList.remove('w-20');
+        sidebar.classList.add('w-72');
+        if (mainContent) {
+          mainContent.classList.remove('lg:ml-20');
+          mainContent.classList.add('lg:ml-72');
+        }
+      }
+    });
+
+    // 6. Bind Mobile responsive controls
+    const sidebarOverlay = document.getElementById('sidebarOverlay');
+    document.getElementById('sidebarToggle')?.addEventListener('click', () => {
+      sidebar.classList.toggle('-translate-x-full');
+      sidebarOverlay?.classList.toggle('hidden');
+    });
+    sidebarOverlay?.addEventListener('click', () => {
+      sidebar.classList.add('-translate-x-full');
+      sidebarOverlay.classList.add('hidden');
+    });
+
+  } catch (err) {
+    console.error('Error loading sidebar:', err);
+  }
+}
+
+// ==========================================
+// 2. MAIN LIFECYCLE CONTROLLER (DOMContentLoaded)
+// ==========================================
 document.addEventListener('DOMContentLoaded', () => {
   updateThemeIcons();
+  
+  // 2.1 Route Guard / Authentication Check
   const isLoginPage = window.location.pathname.includes('login.html') || window.location.pathname.endsWith('/');
   const user = localStorage.getItem('dvms_user');
 
   if (!isLoginPage && !user) { window.location.href = 'login.html'; return; }
   if (isLoginPage && user) { window.location.href = 'dashboard.html'; return; }
 
-  // Sidebar Controls
+  // 2.2 Instant Sidebar Collapse Restoration (avoids layout shift)
   const sidebar = document.getElementById('sidebar');
-  const sidebarOverlay = document.getElementById('sidebarOverlay');
-  document.getElementById('sidebarToggle')?.addEventListener('click', () => {
-    sidebar.classList.toggle('-translate-x-full');
-    sidebarOverlay.classList.toggle('hidden');
-  });
-  sidebarOverlay?.addEventListener('click', () => {
-    sidebar.classList.add('-translate-x-full');
-    sidebarOverlay.classList.add('hidden');
-  });
+  const mainContent = document.getElementById('mainContent');
+  if (sidebar && localStorage.getItem('dvms_sidebar_collapsed') === 'true') {
+    sidebar.classList.add('collapsed');
+    sidebar.classList.remove('w-72');
+    sidebar.classList.add('w-20');
+    if (mainContent) {
+      mainContent.classList.remove('lg:ml-72');
+      mainContent.classList.add('lg:ml-20');
+    }
+  }
 
-  document.querySelectorAll('[data-logout]').forEach(btn => {
-    btn.addEventListener('click', async () => {
-      await fetch('api/logout.php');
-      localStorage.removeItem('dvms_user');
-      window.location.href = 'login.html';
-    });
-  });
-  document.querySelectorAll('[data-username]').forEach(el => el.textContent = user || 'Admin');
+  // 2.3 Initialize Dynamic Sidebar content and logic
+  initSidebar();
 
   // Load Dashboard Data from API
   if (document.getElementById('statsGrid')) {
@@ -139,7 +345,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // 2. Fetch Visitors List for Overstays and Recent Table
-    fetch('api/visitor_list.php').then(r => r.json()).then(res => {
+    fetch('api/visitor.php').then(r => r.json()).then(res => {
       if (res.status === 'success') {
         const todayStr = new Date().toISOString().split('T')[0];
         const allVisitors = res.data;
@@ -214,7 +420,7 @@ document.addEventListener('DOMContentLoaded', () => {
       }
 
       try {
-        const res = await fetch('api/add_visitor.php', { method: 'POST', body: fd });
+        const res = await fetch('api/visitor.php', { method: 'POST', body: fd });
         const data = await res.json();
 
         if (data.status === 'success') {
@@ -250,7 +456,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const st = statusFilter?.value || 'all';
 
       try {
-        const res = await fetch(`api/visitor_list.php?search=${encodeURIComponent(q)}&status=${st}`);
+        const res = await fetch(`api/visitor.php?search=${encodeURIComponent(q)}&status=${st}`);
         const data = await res.json();
         if (data.status === 'success') {
           globalVisitorsData = data.data; // store globally for Modals
@@ -317,6 +523,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 <button data-edit="${v.visit_id}" class="p-1.5 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg text-slate-600 dark:text-slate-400" title="Edit">
                   <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
                 </button>
+                <button data-blacklist="${v.visit_id}" class="p-1.5 hover:bg-red-50 dark:hover:bg-red-950/30 rounded-lg text-red-600 dark:text-red-400" title="Add to Blacklist">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"/></svg>
+                </button>
                 ${v.status === 'active' ? `<button data-exit="${v.visit_id}" class="p-1.5 hover:bg-red-50 dark:hover:bg-red-950 rounded-lg text-red-600 dark:text-red-400" title="Check Out">
                   <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
                 </button>` : `<button data-delete="${v.visit_id}" class="p-1.5 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg text-slate-400" title="Delete Record">
@@ -344,6 +553,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const exitBtn = e.target.closest('[data-exit]');
       const editBtn = e.target.closest('[data-edit]');
       const delBtn = e.target.closest('[data-delete]');
+      const blacklistBtn = e.target.closest('[data-blacklist]');
 
       if (viewBtn) openVisitorModal(viewBtn.dataset.view);
 
@@ -366,7 +576,7 @@ document.addEventListener('DOMContentLoaded', () => {
               fd.append('visit_id', v.visit_id);
               fd.append('action', 'checkout');
 
-              const res = await fetch('api/edit_visitor.php', { method: 'POST', body: fd });
+              const res = await fetch('api/visitor.php', { method: 'POST', body: fd });
               const data = await res.json();
               if (data.status === 'success') {
                 showToast(`${v.name} checked out successfully`, 'success');
@@ -392,7 +602,7 @@ document.addEventListener('DOMContentLoaded', () => {
             fd.append('visit_id', vId);
             fd.append('action', 'delete'); // Note: ensure API supports 'delete'
 
-            const res = await fetch('api/edit_visitor.php', { method: 'POST', body: fd });
+            const res = await fetch('api/visitor.php', { method: 'POST', body: fd });
             const data = await res.json();
             if (data.status === 'success') {
               showToast('Record deleted permanently', 'success');
@@ -403,6 +613,28 @@ document.addEventListener('DOMContentLoaded', () => {
           },
           'danger'
         );
+      }
+
+      if (blacklistBtn) {
+        const vId = blacklistBtn.dataset.blacklist;
+        const v = globalVisitorsData.find(x => String(x.visit_id) === vId);
+        if (v) {
+          showBlacklistPrompt(v.name, v.mobile, async (reason) => {
+            const fd = new FormData();
+            fd.append('name', v.name);
+            fd.append('mobile', v.mobile);
+            fd.append('reason', reason);
+
+            const res = await fetch('api/blacklist.php', { method: 'POST', body: fd });
+            const data = await res.json();
+            if (data.status === 'success') {
+              showToast(`${v.name} has been blacklisted`, 'success');
+              window.loadVisitors();
+            } else {
+              showToast(data.message || 'Failed to blacklist visitor', 'error');
+            }
+          });
+        }
       }
     });
 
@@ -514,7 +746,7 @@ document.addEventListener('DOMContentLoaded', () => {
         submitBtn.disabled = true;
 
         try {
-          const res = await fetch('api/edit_visitor.php', {
+          const res = await fetch('api/visitor.php', {
             method: 'POST',
             body: fd
           });
@@ -576,7 +808,13 @@ document.addEventListener('DOMContentLoaded', () => {
     if (data.status === 'success') {
       showToast('Added successfully');
       e.target.reset();
+      if (document.getElementById('visitorSearchSelect')) {
+        document.getElementById('visitorSearchSelect').value = '';
+        document.getElementById('clearVisitorSelect')?.classList.add('hidden');
+      }
       loadBlacklist(); // <--- FIX 1: Refreshes the list instantly
+    } else {
+      showToast(data.message || 'Failed to add to blacklist', 'error');
     }
   });
 
@@ -591,8 +829,108 @@ document.addEventListener('DOMContentLoaded', () => {
     if (data.status === 'success') {
       showToast('Removed successfully');
       loadBlacklist(); // <--- FIX 2: Refreshes the list instantly
+    } else {
+      showToast(data.message || 'Failed to remove from blacklist', 'error');
     }
   };
+
+  // Autocomplete Select Existing Visitor logic
+  const searchSelect = document.getElementById('visitorSearchSelect');
+  const dropdownList = document.getElementById('visitorDropdownList');
+  const clearSelectBtn = document.getElementById('clearVisitorSelect');
+  const blacklistForm = document.getElementById('blacklistForm');
+
+  if (searchSelect && dropdownList) {
+    let allVisitors = [];
+    let uniqueVisitors = [];
+
+    // Fetch unique visitors from database
+    fetch('api/visitor.php')
+      .then(r => r.json())
+      .then(res => {
+        if (res.status === 'success') {
+          allVisitors = res.data;
+          const seen = new Set();
+          uniqueVisitors = [];
+          allVisitors.forEach(v => {
+            if (!seen.has(v.mobile)) {
+              seen.add(v.mobile);
+              uniqueVisitors.push({ name: v.name, mobile: v.mobile });
+            }
+          });
+        }
+      })
+      .catch(err => console.error('Error fetching visitors for dropdown:', err));
+
+    function renderDropdown(filteredList) {
+      if (filteredList.length === 0) {
+        dropdownList.innerHTML = '<div class="p-3 text-slate-500 text-sm text-center">No matches found</div>';
+      } else {
+        dropdownList.innerHTML = filteredList.map(v => `
+          <div class="px-4 py-2.5 hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer transition-colors" data-name="${v.name}" data-mobile="${v.mobile}">
+            <p class="font-medium text-sm text-slate-800 dark:text-slate-200">${v.name}</p>
+            <p class="text-xs text-slate-500 dark:text-slate-400 font-mono">${v.mobile}</p>
+          </div>
+        `).join('');
+      }
+      dropdownList.classList.remove('hidden');
+    }
+
+    searchSelect.addEventListener('focus', () => {
+      // Filter list and show dropdown on focus
+      const query = searchSelect.value.toLowerCase().trim();
+      const matches = uniqueVisitors.filter(v => v.name.toLowerCase().includes(query) || v.mobile.includes(query));
+      renderDropdown(matches.slice(0, 15));
+    });
+
+    searchSelect.addEventListener('input', () => {
+      const query = searchSelect.value.toLowerCase().trim();
+      if (query) {
+        clearSelectBtn?.classList.remove('hidden');
+      } else {
+        clearSelectBtn?.classList.add('hidden');
+      }
+      const matches = uniqueVisitors.filter(v => v.name.toLowerCase().includes(query) || v.mobile.includes(query));
+      renderDropdown(matches.slice(0, 15));
+    });
+
+    // Clear Selection
+    clearSelectBtn?.addEventListener('click', () => {
+      searchSelect.value = '';
+      clearSelectBtn.classList.add('hidden');
+      if (blacklistForm) {
+        blacklistForm.querySelector('[name="name"]').value = '';
+        blacklistForm.querySelector('[name="mobile"]').value = '';
+      }
+      dropdownList.classList.add('hidden');
+    });
+
+    // Handle Selection click
+    dropdownList.addEventListener('click', (e) => {
+      const option = e.target.closest('[data-mobile]');
+      if (option && blacklistForm) {
+        const name = option.dataset.name;
+        const mobile = option.dataset.mobile;
+
+        searchSelect.value = `${name} (${mobile})`;
+        clearSelectBtn?.classList.remove('hidden');
+
+        // Autofill form fields
+        blacklistForm.querySelector('[name="name"]').value = name;
+        blacklistForm.querySelector('[name="mobile"]').value = mobile;
+
+        // Hide dropdown
+        dropdownList.classList.add('hidden');
+      }
+    });
+
+    // Close dropdown when clicking outside
+    document.addEventListener('click', (e) => {
+      if (!searchSelect.contains(e.target) && !dropdownList.contains(e.target)) {
+        dropdownList.classList.add('hidden');
+      }
+    });
+  }
 
   // Initial load
   loadBlacklist();
