@@ -13,7 +13,9 @@
 </head>
 
 <body class="bg-slate-50 dark:bg-slate-950 font-sans text-slate-900 dark:text-slate-100 h-full overflow-hidden">
+
   <div class="flex h-full">
+
     <aside id="sidebar"
       class="fixed inset-y-0 left-0 z-40 w-72 bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 transform -translate-x-full lg:translate-x-0 transition-transform duration-300 flex flex-col">
       <div class="h-[73px] flex items-center px-6 border-b border-slate-200 dark:border-slate-800 shrink-0">
@@ -85,9 +87,10 @@
       </div>
     </aside>
 
-    <div id="sidebarOverlay" class="fixed inset-0 bg-black/50 z-30 hidden lg:hidden"></div>
 
-    <div class="flex-1 lg:ml-72 flex flex-col h-full">
+
+    <div class="flex-1 flex flex-col min-w-0 lg:ml-72 bg-slate-50 dark:bg-slate-950">
+
       <header
         class="h-[73px] shrink-0 sticky top-0 z-20 bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border-b border-slate-200 dark:border-slate-800">
         <div class="h-full flex items-center justify-between px-4 lg:px-8">
@@ -108,101 +111,254 @@
             <button onclick="toggleTheme()"
               class="p-2.5 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition-colors" data-theme-icon
               title="Toggle theme"></button>
-            <button class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-sm font-medium">Export
-              PDF</button>
           </div>
         </div>
       </header>
 
-      <main class="flex-1 overflow-y-auto overflow-x-hidden">
-        <div class="p-4 lg:p-8">
-          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6 mb-8">
-            <div class="bg-white dark:bg-slate-900 rounded-2xl p-6 border border-slate-200 dark:border-slate-800">
-              <p class="text-sm text-slate-500 dark:text-slate-400">Daily Average</p>
-              <p class="text-2xl font-bold mt-1">18.4</p>
-              <p class="text-xs text-emerald-600 mt-1">↑ 12% vs last week</p>
-            </div>
-            <div class="bg-white dark:bg-slate-900 rounded-2xl p-6 border border-slate-200 dark:border-slate-800">
-              <p class="text-sm text-slate-500 dark:text-slate-400">Monthly Total</p>
-              <p class="text-2xl font-bold mt-1">427</p>
-              <p class="text-xs text-emerald-600 mt-1">↑ 8% vs last month</p>
-            </div>
-            <div class="bg-white dark:bg-slate-900 rounded-2xl p-6 border border-slate-200 dark:border-slate-800">
-              <p class="text-sm text-slate-500 dark:text-slate-400">Avg Visit Duration</p>
-              <p class="text-2xl font-bold mt-1">47m</p>
-              <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">↓ 5m vs last week</p>
-            </div>
-            <div class="bg-white dark:bg-slate-900 rounded-2xl p-6 border border-slate-200 dark:border-slate-800">
-              <p class="text-sm text-slate-500 dark:text-slate-400">Repeat Visitors</p>
-              <p class="text-2xl font-bold mt-1">34%</p>
-              <p class="text-xs text-emerald-600 mt-1">↑ 3% vs last month</p>
+      <main class="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">
+        <div class="max-w-7xl mx-auto space-y-6">
+
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+              <h1 class="text-2xl font-bold">Analytics Overview</h1>
+              <p class="text-slate-500 dark:text-slate-400 mt-1">Detailed breakdown of visitor metrics and purposes.</p>
             </div>
           </div>
 
-          <div class="grid grid-cols-1 xl:grid-cols-3 gap-6">
-            <div
-              class="xl:col-span-2 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-6">
-              <h3 class="font-semibold text-lg mb-6">Daily Visitors Trend</h3>
-              <div class="h-72"><canvas id="visitsChart"></canvas></div>
-            </div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-6">
-              <h3 class="font-semibold text-lg mb-1">Visit Purpose</h3>
-              <p class="text-sm text-slate-500 dark:text-slate-400 mb-4">Distribution this month</p>
-              <div class="h-64 relative">
+              <div class="flex items-center justify-between mb-4">
+                <h3 class="text-slate-500 dark:text-slate-400 text-sm font-medium">Total Visitors</h3>
+                <div class="p-2 bg-indigo-50 dark:bg-indigo-900/30 rounded-lg text-indigo-600 dark:text-indigo-400">
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+                  </svg>
+                </div>
+              </div>
+              <p class="text-3xl font-bold" id="dyn-total">0</p>
+            </div>
+
+            <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-6">
+              <div class="flex items-center justify-between mb-4">
+                <h3 class="text-slate-500 dark:text-slate-400 text-sm font-medium">Active Visits</h3>
+                <div class="p-2 bg-emerald-50 dark:bg-emerald-900/30 rounded-lg text-emerald-600 dark:text-emerald-400">
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                </div>
+              </div>
+              <p class="text-3xl font-bold" id="dyn-active">0</p>
+            </div>
+
+            <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-6">
+              <div class="flex items-center justify-between mb-4">
+                <h3 class="text-slate-500 dark:text-slate-400 text-sm font-medium">Avg. Duration</h3>
+                <div class="p-2 bg-amber-50 dark:bg-amber-900/30 rounded-lg text-amber-600 dark:text-amber-400">
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                </div>
+              </div>
+              <p class="text-3xl font-bold" id="dyn-duration">0<span class="text-lg">m</span></p>
+            </div>
+
+            <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-6">
+              <div class="flex items-center justify-between mb-4">
+                <h3 class="text-slate-500 dark:text-slate-400 text-sm font-medium">Blacklisted</h3>
+                <div class="p-2 bg-red-50 dark:bg-red-900/30 rounded-lg text-red-600 dark:text-red-400">
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                  </svg>
+                </div>
+              </div>
+              <p class="text-3xl font-bold" id="dyn-blacklisted">0</p>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+
+            <div
+              class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-6 flex flex-col">
+              <div class="flex items-center justify-between mb-6">
+                <h3 class="text-lg font-semibold">Daily Visitor Trend</h3>
+                <div class="p-2 bg-indigo-50 dark:bg-indigo-900/30 rounded-lg text-indigo-600 dark:text-indigo-400">
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+                  </svg>
+                </div>
+              </div>
+              <div class="relative h-[250px] w-full flex items-center justify-center mt-auto">
+                <canvas id="visitsChart"></canvas>
+              </div>
+            </div>
+
+            <div
+              class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-6 flex flex-col">
+              <div class="flex items-center justify-between mb-6">
+                <h3 class="text-lg font-semibold">Visit Purpose Breakdown</h3>
+                <div class="p-2 bg-indigo-50 dark:bg-indigo-900/30 rounded-lg text-indigo-600 dark:text-indigo-400">
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z" />
+                  </svg>
+                </div>
+              </div>
+              <div class="relative h-[250px] w-full flex items-center justify-center mb-6">
                 <canvas id="purposeChart"></canvas>
               </div>
-              <div class="mt-4 grid grid-cols-2 gap-2 text-xs">
-                <div class="flex items-center gap-2"><span
-                    class="w-3 h-3 rounded-full bg-indigo-600"></span><span>Interview (35%)</span></div>
-                <div class="flex items-center gap-2"><span class="w-3 h-3 rounded-full bg-cyan-500"></span><span>Meeting
-                    (25%)</span></div>
-                <div class="flex items-center gap-2"><span
-                    class="w-3 h-3 rounded-full bg-emerald-500"></span><span>Delivery (20%)</span></div>
-                <div class="flex items-center gap-2"><span
-                    class="w-3 h-3 rounded-full bg-amber-500"></span><span>Maintenance (12%)</span></div>
+              <div id="purposeLegend" class="space-y-4 pt-2 mt-auto border-t border-slate-100 dark:border-slate-800">
               </div>
             </div>
+
           </div>
         </div>
       </main>
     </div>
   </div>
 
+  <script src="main.js"></script>
 
-  <script src="main.js?v=4"></script>
   <script>
-    // Initialize charts after everything loads
-    window.addEventListener('load', function () {
-      // Visit Purpose Doughnut Chart - Fixed
-      const ctx2 = document.getElementById('purposeChart');
-      if (ctx2 && typeof Chart !== 'undefined') {
-        new Chart(ctx2, {
-          type: 'doughnut',
-          data: {
-            labels: ['Interview', 'Client Meeting', 'Delivery', 'Maintenance', 'Other'],
-            datasets: [{
-              data: [35, 25, 20, 12, 8],
-              backgroundColor: ['#4f46e5', '#06b6d4', '#10b981', '#f59e0b', '#8b5cf6'],
-              borderWidth: 0,
-              hoverOffset: 8
-            }]
-          },
-          options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            cutout: '65%',
-            plugins: {
-              legend: { display: false },
-              tooltip: {
-                backgroundColor: 'rgba(15, 23, 42, 0.9)',
-                padding: 12,
-                cornerRadius: 8,
-                titleFont: { size: 13 },
-                bodyFont: { size: 12 }
+    window.addEventListener('load', async function () {
+      try {
+        // IMPORTANT: Verify this path. If reports.php is in the same folder, 
+        // remove 'api/' and just use 'reports.php'
+        const response = await fetch('api/reports.php');
+
+        // Get the text first to debug
+        const text = await response.text();
+
+        let res;
+        try {
+          res = JSON.parse(text);
+        } catch (e) {
+          console.error("CRITICAL: Server returned HTML/Text instead of JSON. The response was:");
+          console.error(text); // This will show you the exact error page/message
+          throw new Error("Invalid JSON response from server");
+        }
+
+        if (res.status === 'success') {
+          // --- 1. POPULATE 4 STAT CARDS ---
+          document.getElementById('dyn-total').innerText = res.total_visitors || 0;
+          document.getElementById('dyn-active').innerText = res.active_visits || 0;
+          document.getElementById('dyn-duration').innerHTML = (res.avg_duration || 0) + '<span class="text-lg">m</span>';
+          document.getElementById('dyn-blacklisted').innerText = res.blacklisted || 0;
+
+          // ... (The rest of your chart drawing code remains the same) ...
+          // --- 2. DRAW DAILY TREND CHART ---
+          const ctx1 = document.getElementById('visitsChart');
+          if (ctx1 && typeof Chart !== 'undefined') {
+            let existingChart1 = Chart.getChart(ctx1);
+            if (existingChart1) existingChart1.destroy();
+
+            new Chart(ctx1, {
+              type: 'line',
+              data: {
+                labels: res.trend_labels,
+                datasets: [{
+                  label: 'Visitors',
+                  data: res.trend_values,
+                  borderColor: '#4f46e5',
+                  backgroundColor: 'rgba(79,70,229,0.1)',
+                  tension: 0.4,
+                  fill: true
+                }]
+              },
+              options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } }
               }
+            });
+          }
+
+          // --- 3. DRAW PURPOSE DOUGHNUT CHART ---
+          const ctx2 = document.getElementById('purposeChart');
+          const legendContainer = document.getElementById('purposeLegend');
+
+          if (ctx2 && res.chart_data && typeof Chart !== 'undefined') {
+            let existingChart2 = Chart.getChart(ctx2);
+            if (existingChart2) existingChart2.destroy();
+
+            const chartData = res.chart_data;
+            const labels = [];
+            const dataValues = [];
+            let totalVisits = 0;
+            const colors = ['#4f46e5', '#06b6d4', '#10b981', '#f59e0b', '#8b5cf6', '#ec4899', '#f43f5e', '#84cc16'];
+
+            chartData.forEach(item => {
+              labels.push(item.purpose ? item.purpose : 'Unspecified');
+              const count = parseInt(item.count, 10);
+              dataValues.push(count);
+              totalVisits += count;
+            });
+
+            new Chart(ctx2, {
+              type: 'doughnut',
+              data: {
+                labels: labels,
+                datasets: [{
+                  data: dataValues,
+                  backgroundColor: colors.slice(0, dataValues.length),
+                  borderWidth: 0,
+                  hoverOffset: 8
+                }]
+              },
+              options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                cutout: '65%',
+                plugins: {
+                  legend: { display: false },
+                  tooltip: {
+                    backgroundColor: 'rgba(15, 23, 42, 0.9)',
+                    padding: 12,
+                    cornerRadius: 8,
+                    titleFont: { size: 13 },
+                    bodyFont: { size: 13 }
+                  }
+                }
+              }
+            });
+
+            if (legendContainer) {
+              legendContainer.innerHTML = '';
+              chartData.forEach((item, index) => {
+                const count = parseInt(item.count, 10);
+                const percentage = totalVisits > 0 ? Math.round((count / totalVisits) * 100) : 0;
+                const purposeName = item.purpose ? item.purpose : 'Unspecified';
+                const colorCode = colors[index % colors.length];
+
+                const html = `
+                  <div class="flex items-center justify-between text-sm mt-3">
+                    <div class="flex items-center gap-2">
+                      <span class="w-3 h-3 rounded-full" style="background-color: ${colorCode}"></span>
+                      <span class="text-slate-600 dark:text-slate-400 capitalize">${purposeName}</span>
+                    </div>
+                    <div class="flex items-center gap-3">
+                      <span class="text-slate-500 text-xs">(${count})</span>
+                      <span class="font-medium text-slate-900 dark:text-white w-8 text-right">${percentage}%</span>
+                    </div>
+                  </div>
+                `;
+                legendContainer.insertAdjacentHTML('beforeend', html);
+              });
             }
           }
-        });
+
+        } else {
+          console.error("API Error:", res.message);
+        }
+      } catch (err) {
+        console.error('Error loading dynamic chart data:', err);
       }
     });
   </script>

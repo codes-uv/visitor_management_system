@@ -328,14 +328,62 @@
 
 
   <script src="main.js"></script>
-  <script>
+  <!-- <script>
     function showSection(name) {
       document.querySelectorAll('section[id^="section-"]').forEach(s => s.classList.add('hidden'));
       document.getElementById('section-' + name).classList.remove('hidden');
       window.scrollTo(0, 0);
     }
     if (location.hash === '#blacklist') showSection('blacklist');
+  </script> -->
+
+  <!-- new function for showSection -->
+  <script>
+    function showSection(name) {
+      // 1. Hide all sections and show the target one
+      document.querySelectorAll('section[id^="section-"]').forEach(s => {
+        s.classList.add('hidden');
+      });
+
+      const targetSection = document.getElementById('section-' + name);
+      if (targetSection) {
+        targetSection.classList.remove('hidden');
+      }
+
+      // 2. Bulletproof Sidebar Highlights
+      // Select ALL links/buttons in the sidebar so nothing escapes the color reset
+      const navLinks = document.querySelectorAll('#sidebar a, #sidebar button');
+
+      navLinks.forEach(link => {
+        const onclickAttr = link.getAttribute('onclick') || '';
+
+        // Safety check: Only modify links that are actually navigation items 
+        // (ignoring logos or standard buttons that don't have our padding classes)
+        if (link.classList.contains('px-4') || onclickAttr.includes('showSection')) {
+
+          // Is this the link we just clicked?
+          if (onclickAttr.includes(`('${name}')`) || onclickAttr.includes(`("${name}")`)) {
+            // YES: Apply Active styling (Blue/Indigo)
+            link.classList.add('bg-indigo-50', 'text-indigo-600', 'dark:bg-indigo-900/50', 'dark:text-indigo-400');
+            link.classList.remove('text-slate-600', 'hover:bg-slate-100', 'dark:text-slate-400', 'dark:hover:bg-slate-800');
+          } else {
+            // NO: Apply Inactive styling (Slate/Gray)
+            // Crucial Step: Forcibly remove active classes here so the hardcoded Dashboard clears out!
+            link.classList.remove('bg-indigo-50', 'text-indigo-600', 'dark:bg-indigo-900/50', 'dark:text-indigo-400');
+            link.classList.add('text-slate-600', 'hover:bg-slate-100', 'dark:text-slate-400', 'dark:hover:bg-slate-800');
+          }
+        }
+      });
+
+      // 3. Automatically close the sidebar on mobile devices
+      const sidebar = document.getElementById('sidebar');
+      if (window.innerWidth < 1024 && sidebar && !sidebar.classList.contains('-translate-x-full')) {
+        sidebar.classList.add('-translate-x-full');
+      }
+    }
   </script>
+
+
 </body>
 
 </html>
