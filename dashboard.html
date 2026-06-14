@@ -231,8 +231,8 @@
                   class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm p-6">
                   <h3 class="font-semibold mb-4">Quick Actions</h3>
                   <div class="space-y-3">
-                    <button onclick="showSection('add')"
-                      class="w-full flex items-center gap-3 p-3 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-xl transition text-left">
+                    <a href="visitors.html"
+                      class="w-full flex items-center gap-3 p-3 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-xl transition">
                       <div
                         class="w-10 h-10 bg-indigo-100 dark:bg-indigo-950 rounded-lg flex items-center justify-center">
                         <svg class="w-5 h-5 text-indigo-600 dark:text-indigo-400" fill="none" stroke="currentColor"
@@ -245,7 +245,9 @@
                         <p class="font-medium">Add New Visitor</p>
                         <p class="text-xs text-slate-500 dark:text-slate-400">Quick check-in</p>
                       </div>
-                    </button>
+                    </a>
+
+
                     <a href="visitors.html"
                       class="w-full flex items-center gap-3 p-3 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-xl transition">
                       <div
@@ -324,7 +326,7 @@
     </div>
   </div>
 
-  <script src="data.js"></script>
+
   <script src="main.js"></script>
   <script>
     function showSection(name) {
@@ -332,7 +334,6 @@
       document.getElementById('section-' + name).classList.remove('hidden');
       window.scrollTo(0, 0);
     }
-    if (location.hash === '#add') showSection('add');
     if (location.hash === '#blacklist') showSection('blacklist');
   </script>
 </body>
